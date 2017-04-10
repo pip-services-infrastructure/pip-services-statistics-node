@@ -1,0 +1,8 @@
+/node_modules
+/npm-debug.log
+/.idea
+/config/config.yaml
+/config/test_connections.yaml
+/data/statistics.test.json
+/data/statistics.json
+/obj/test

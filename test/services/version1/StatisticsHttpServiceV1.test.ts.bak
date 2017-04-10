@@ -1,0 +1,131 @@
+let _ = require('lodash');
+let async = require('async');
+let restify = require('restify');
+let assert = require('chai').assert;
+
+import { ConfigParams } from 'pip-services-commons-node';
+import { Descriptor } from 'pip-services-commons-node';
+import { References } from 'pip-services-commons-node';
+
+import { StatCounterSetV1 } from '../../../src/data/version1/StatCounterSetV1';
+import { StatisticsTypeV1 } from '../../../src/data/version1/StatisticsTypeV1';
+import { StatisticsSeverityV1 } from '../../../src/data/version1/StatisticsSeverityV1';
+import { StatisticsMemoryPersistence } from '../../../src/persistence/StatisticsMemoryPersistence';
+import { StatisticsController } from '../../../src/logic/StatisticsController';
+import { StatisticsHttpServiceV1 } from '../../../src/services/version1/StatisticsHttpServiceV1';
+
+let httpConfig = ConfigParams.fromTuples(
+    "connection.protocol", "http",
+    "connection.host", "localhost",
+    "connection.port", 3000
+);
+
+let EVENT1: StatCounterSetV1 = new StatCounterSetV1(
+    null,
+    'test',
+    StatisticsTypeV1.Restart,
+    StatisticsSeverityV1.Important,
+    'test restart #1'
+);
+let EVENT2: StatCounterSetV1 = new StatCounterSetV1(
+    null,
+    'test',
+    StatisticsTypeV1.Failure,
+    StatisticsSeverityV1.Critical,
+    'test error'
+);
+
+suite('StatisticsHttpServiceV1', ()=> {
+    let service: StatisticsHttpServiceV1;
+
+    let rest: any;
+
+    suiteSetup((done) => {
+        let persistence = new StatisticsMemoryPersistence();
+        let controller = new StatisticsController();
+
+        service = new StatisticsHttpServiceV1();
+        service.configure(httpConfig);
+
+        let references: References = References.fromTuples(
+            new Descriptor('pip-services-statistics', 'persistence', 'memory', 'default', '1.0'), persistence,
+            new Descriptor('pip-services-statistics', 'controller', 'default', 'default', '1.0'), controller,
+            new Descriptor('pip-services-statistics', 'service', 'http', 'default', '1.0'), service
+        );
+        controller.setReferences(references);
+        service.setReferences(references);
+
+        service.open(null, done);
+    });
+    
+    suiteTeardown((done) => {
+        service.close(null, done);
+    });
+
+    setup(() => {
+        let url = 'http://localhost:3000';
+        rest = restify.createJsonClient({ url: url, version: '*' });
+    });
+    
+    test('CRUD Operations', (done) => {
+        let event1;
+        let event2;
+
+        async.series([
+        // Create one activity
+            (callback) => {
+                rest.post('/statistics/log_event',
+                    {
+                        event: EVENT1
+                    },
+                    (err, req, res, event) => {
+                        assert.isNull(err);
+
+                        assert.isObject(event);
+                        assert.isNotNull(event.time);
+                        assert.equal(event.type, EVENT1.type);
+                        assert.equal(event.message, EVENT1.message);
+
+                        event1 = event;
+
+                        callback();
+                    }
+                );
+            },
+        // Create another activity
+            (callback) => {
+                rest.post('/statistics/log_event',
+                    {
+                        event: EVENT2
+                    },
+                    (err, req, res, event) => {
+                        assert.isNull(err);
+
+                        assert.isObject(event);
+                        assert.isNotNull(event.time);
+                        assert.equal(event.type, EVENT2.type);
+                        assert.equal(event.message, EVENT2.message);
+
+                        event2 = event;
+
+                        callback();
+                    }
+                );
+            },
+        // Get all activities
+            (callback) => {
+                rest.post('/statistics/get_events',
+                    {},
+                    (err, req, res, page) => {
+                        assert.isNull(err);
+
+                        assert.isObject(page);
+                        assert.lengthOf(page.data, 2);
+
+                        callback();
+                    }
+                );
+            }
+        ], done);
+    });
+});

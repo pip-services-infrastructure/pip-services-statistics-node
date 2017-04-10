@@ -1,0 +1,1 @@
+export { StatisticsFactory } from './StatisticsFactory';
