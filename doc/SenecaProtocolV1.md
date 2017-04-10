@@ -130,7 +130,7 @@ Reads counter by group and name within specific time interval
 - err: Error - occured error or null for success
 - result: StatCounterSetV1 - set of retrieved counter values
 
-### <a name="operation3"></a> Cmd: 'read\_counters'
+### <a name="operation4"></a> Cmd: 'read\_counters'
 
 Reads multiple counters within specific time interval
 
