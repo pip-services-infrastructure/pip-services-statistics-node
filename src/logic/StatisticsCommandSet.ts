@@ -5,7 +5,13 @@ import { Schema } from 'pip-services-commons-node';
 import { Parameters } from 'pip-services-commons-node';
 import { FilterParams } from 'pip-services-commons-node';
 import { PagingParams } from 'pip-services-commons-node';
+import { ObjectSchema } from 'pip-services-commons-node';
+import { ArraySchema } from 'pip-services-commons-node';
+import { TypeCode } from 'pip-services-commons-node';
+import { FilterParamsSchema } from 'pip-services-commons-node';
+import { PagingParamsSchema } from 'pip-services-commons-node';
 
+import { StatCounterV1Schema } from '../data/version1/StatCounterV1Schema';
 import { StatCounterV1 } from '../data/version1/StatCounterV1';
 import { StatCounterSetV1 } from '../data/version1/StatCounterSetV1';
 import { IStatisticsBusinessLogic } from './IStatisticsBusinessLogic';
@@ -28,7 +34,9 @@ export class StatisticsCommandSet extends CommandSet {
 	private makeGetContersCommand(): ICommand {
 		return new Command(
 			"get_counters",
-			null,
+			new ObjectSchema(true)
+				.withOptionalProperty('filter', new FilterParamsSchema())
+				.withOptionalProperty('paging', new PagingParamsSchema()),
 			(correlationId: string, args: Parameters, callback: (err: any, result: any) => void) => {
 				let filter = FilterParams.fromValue(args.get("filter"));
 				let paging = PagingParams.fromValue(args.get("paging"));
@@ -40,7 +48,11 @@ export class StatisticsCommandSet extends CommandSet {
 	private makeIncrementCounterCommand(): ICommand {
 		return new Command(
 			"increment_counter",
-			null,
+			new ObjectSchema(true)
+				.withRequiredProperty('group', TypeCode.String)
+				.withRequiredProperty('name', TypeCode.String)
+				.withOptionalProperty('time', null) //TypeCode.DateTime)
+				.withRequiredProperty('value', null), //TypeCode.Double)
 			(correlationId: string, args: Parameters, callback: (err: any, result: any) => void) => {
 				let group = args.getAsNullableString("group");
 				let name = args.getAsNullableString("name");
@@ -56,7 +68,12 @@ export class StatisticsCommandSet extends CommandSet {
 	private makeReadOneCounterCommand(): ICommand {
 		return new Command(
 			"read_one_counter",
-			null,
+			new ObjectSchema(true)
+				.withRequiredProperty('group', TypeCode.String)
+				.withRequiredProperty('name', TypeCode.String)
+				.withRequiredProperty('type', TypeCode.Long)
+				.withOptionalProperty('from_time', null) //TypeCode.DateTime)
+				.withOptionalProperty('to_time', null), //TypeCode.DateTime)
 			(correlationId: string, args: Parameters, callback: (err: any, result: any) => void) => {
 				let group = args.getAsNullableString("group");
 				let name = args.getAsNullableString("name");
@@ -71,7 +88,11 @@ export class StatisticsCommandSet extends CommandSet {
 	private makeReadCountersCommand(): ICommand {
 		return new Command(
 			"read_counters",
-			null,
+			new ObjectSchema(true)
+				.withRequiredProperty('counters', new ArraySchema(new StatCounterV1Schema()))
+				.withRequiredProperty('type', TypeCode.Long)
+				.withOptionalProperty('from_time', null) //TypeCode.DateTime)
+				.withOptionalProperty('to_time', null), //TypeCode.DateTime)
 			(correlationId: string, args: Parameters, callback: (err: any, result: any) => void) => {
 				let counters: StatCounterV1[] = args.get("counters");
 				let type = args.getAsNullableInteger("type");

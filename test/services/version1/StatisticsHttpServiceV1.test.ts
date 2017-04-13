@@ -1,12 +1,11 @@
 let _ = require('lodash');
 let async = require('async');
+let restify = require('restify');
 let assert = require('chai').assert;
 
-import { Descriptor } from 'pip-services-commons-node';
 import { ConfigParams } from 'pip-services-commons-node';
+import { Descriptor } from 'pip-services-commons-node';
 import { References } from 'pip-services-commons-node';
-import { ConsoleLogger } from 'pip-services-commons-node';
-import { SenecaInstance } from 'pip-services-net-node';
 import { DateTimeConverter } from 'pip-services-commons-node';
 
 import { StatCounterV1 } from '../../../src/data/version1/StatCounterV1';
@@ -14,38 +13,34 @@ import { StatCounterSetV1 } from '../../../src/data/version1/StatCounterSetV1';
 import { StatCounterTypeV1 } from '../../../src/data/version1/StatCounterTypeV1';
 import { StatisticsMemoryPersistence } from '../../../src/persistence/StatisticsMemoryPersistence';
 import { StatisticsController } from '../../../src/logic/StatisticsController';
-import { StatisticsSenecaServiceV1 } from '../../../src/services/version1/StatisticsSenecaServiceV1';
+import { StatisticsHttpServiceV1 } from '../../../src/services/version1/StatisticsHttpServiceV1';
 
-suite('StatisticsSenecaServiceV1', ()=> {
-    let seneca: any;
-    let service: StatisticsSenecaServiceV1;
-    let persistence: StatisticsMemoryPersistence;
-    let controller: StatisticsController;
+let httpConfig = ConfigParams.fromTuples(
+    "connection.protocol", "http",
+    "connection.host", "localhost",
+    "connection.port", 3000
+);
+
+
+suite('StatisticsHttpServiceV1', ()=> {
+    let service: StatisticsHttpServiceV1;
+
+    let rest: any;
 
     suiteSetup((done) => {
-        persistence = new StatisticsMemoryPersistence();
-        controller = new StatisticsController();
+        let persistence = new StatisticsMemoryPersistence();
+        let controller = new StatisticsController();
 
-        service = new StatisticsSenecaServiceV1();
-        service.configure(ConfigParams.fromTuples(
-            "connection.protocol", "none"
-        ));
-
-        let logger = new ConsoleLogger();
-        let senecaAddon = new SenecaInstance();
+        service = new StatisticsHttpServiceV1();
+        service.configure(httpConfig);
 
         let references: References = References.fromTuples(
-            new Descriptor('pip-services-commons', 'logger', 'console', 'default', '1.0'), logger,
-            new Descriptor('pip-services-net', 'seneca', 'instance', 'default', '1.0'), senecaAddon,
             new Descriptor('pip-services-statistics', 'persistence', 'memory', 'default', '1.0'), persistence,
             new Descriptor('pip-services-statistics', 'controller', 'default', 'default', '1.0'), controller,
-            new Descriptor('pip-services-statistics', 'service', 'seneca', 'default', '1.0'), service
+            new Descriptor('pip-services-statistics', 'service', 'http', 'default', '1.0'), service
         );
-
         controller.setReferences(references);
         service.setReferences(references);
-
-        seneca = senecaAddon.getInstance();
 
         service.open(null, done);
     });
@@ -53,19 +48,18 @@ suite('StatisticsSenecaServiceV1', ()=> {
     suiteTeardown((done) => {
         service.close(null, done);
     });
-    
-    setup((done) => {
-        persistence.clear(null, done);
+
+    setup(() => {
+        let url = 'http://localhost:3000';
+        rest = restify.createJsonClient({ url: url, version: '*' });
     });
     
     test('CRUD Operations', (done) => {
         async.series([
         // Increment counter
             (callback) => {
-                seneca.act(
+                rest.post('/statistics/increment_counter',
                     {
-                        role: 'statistics',
-                        cmd: 'increment_counter',
                         group: 'test', 
                         name: 'value1', 
                         time: DateTimeConverter.toDateTime('1975-04-09T19:00:00.00Z'), 
@@ -80,16 +74,14 @@ suite('StatisticsSenecaServiceV1', ()=> {
             },
         // Increment the same counter again
             (callback) => {
-                seneca.act(
+                rest.post('/statistics/increment_counter',
                     {
-                        role: 'statistics',
-                        cmd: 'increment_counter',
                         group: 'test', 
                         name: 'value1', 
                         time: DateTimeConverter.toDateTime('1975-04-09T20:00:00.00Z'), 
                         value: 2
                     },
-                    (err) => {
+                    (err, req, res) => {
                         assert.isNull(err);
 
                         callback();
@@ -98,12 +90,9 @@ suite('StatisticsSenecaServiceV1', ()=> {
             },
         // Check all counters
             (callback) => {
-                seneca.act(
-                    {
-                        role: 'statistics',
-                        cmd: 'get_counters',
-                    },
-                    (err, page) => {
+                rest.post('/statistics/get_counters',
+                    { },
+                    (err, req, res, page) => {
                         assert.isNull(err);
 
                         assert.isObject(page);
@@ -115,15 +104,13 @@ suite('StatisticsSenecaServiceV1', ()=> {
             },
         // Check total counters
             (callback) => {
-                seneca.act(
+                rest.post('/statistics/read_one_counter',
                     {
-                        role: 'statistics',
-                        cmd: 'read_one_counter',
                         group: 'test', 
                         name: 'value1', 
                         type: StatCounterTypeV1.Total
                     },
-                    (err, set) => {
+                    (err, req, res, set) => {
                         assert.isNull(err);
 
                         assert.isObject(set);
@@ -138,16 +125,14 @@ suite('StatisticsSenecaServiceV1', ()=> {
             },
         // Check monthly counters
             (callback) => {
-                seneca.act(
+                rest.post('/statistics/read_counters',
                     {
-                        role: 'statistics',
-                        cmd: 'read_counters',
                         counters: [ new StatCounterV1('test', 'value1') ], 
                         type: StatCounterTypeV1.Hour,
                         from_time: DateTimeConverter.toDateTime('1975-04-09T19:00:00.00Z'),
                         to_time: DateTimeConverter.toDateTime('1975-04-09T19:00:00.00Z'),
                     },
-                    (err, sets) => {
+                    (err, req, res, sets) => {
                         assert.isNull(err);
 
                         assert.lengthOf(sets, 1);

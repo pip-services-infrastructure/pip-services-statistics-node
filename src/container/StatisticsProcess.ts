@@ -5,15 +5,10 @@ import { StatisticsFactory } from '../build/StatisticsFactory';
 
 export class StatisticsProcess extends ProcessContainer {
 
-    protected initReferences(references: IReferences): void {
-        super.initReferences(references);
-
-        // Factory to statically resolve statistics components
-        references.put(StatisticsFactory.Descriptor, new StatisticsFactory());
+    public constructor() {
+        super("statistics", "Statistics microservice");
+        this._factories.add(new StatisticsFactory);
     }
 
-    public runWithArguments(args: string[]): void {
-        return this.runWithArgumentsOrConfigFile("statistics", args, "./config/config.yaml");
-    }
 
 }

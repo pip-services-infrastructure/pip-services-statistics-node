@@ -1,7 +1,4 @@
-- descriptor: "pip-services-container:container-info:default:default:1.0"
-  name: "pip-services-statistics"
-  description: "Statistics microservice"
-
+---
 - descriptor: "pip-services-commons:logger:console:default:1.0"
   level: "trace"
 
@@ -14,4 +11,4 @@
   connection:
     protocol: "http"
     host: "0.0.0.0"
-    port: 3000
+    port: 8080

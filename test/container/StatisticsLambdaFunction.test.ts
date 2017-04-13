@@ -6,63 +6,40 @@ import { Descriptor } from 'pip-services-commons-node';
 import { ConfigParams } from 'pip-services-commons-node';
 import { References } from 'pip-services-commons-node';
 import { ConsoleLogger } from 'pip-services-commons-node';
-import { SenecaInstance } from 'pip-services-net-node';
 import { DateTimeConverter } from 'pip-services-commons-node';
 
-import { StatCounterV1 } from '../../../src/data/version1/StatCounterV1';
-import { StatCounterSetV1 } from '../../../src/data/version1/StatCounterSetV1';
-import { StatCounterTypeV1 } from '../../../src/data/version1/StatCounterTypeV1';
-import { StatisticsMemoryPersistence } from '../../../src/persistence/StatisticsMemoryPersistence';
-import { StatisticsController } from '../../../src/logic/StatisticsController';
-import { StatisticsSenecaServiceV1 } from '../../../src/services/version1/StatisticsSenecaServiceV1';
+import { StatCounterV1 } from '../../src/data/version1/StatCounterV1';
+import { StatCounterSetV1 } from '../../src/data/version1/StatCounterSetV1';
+import { StatCounterTypeV1 } from '../../src/data/version1/StatCounterTypeV1';
+import { StatisticsMemoryPersistence } from '../../src/persistence/StatisticsMemoryPersistence';
+import { StatisticsController } from '../../src/logic/StatisticsController';
+import { StatisticsLambdaFunction } from '../../src/container/StatisticsLambdaFunction';
 
-suite('StatisticsSenecaServiceV1', ()=> {
-    let seneca: any;
-    let service: StatisticsSenecaServiceV1;
-    let persistence: StatisticsMemoryPersistence;
-    let controller: StatisticsController;
+
+suite('StatisticsLambdaFunction', ()=> {
+    let lambda: StatisticsLambdaFunction;
 
     suiteSetup((done) => {
-        persistence = new StatisticsMemoryPersistence();
-        controller = new StatisticsController();
-
-        service = new StatisticsSenecaServiceV1();
-        service.configure(ConfigParams.fromTuples(
-            "connection.protocol", "none"
-        ));
-
-        let logger = new ConsoleLogger();
-        let senecaAddon = new SenecaInstance();
-
-        let references: References = References.fromTuples(
-            new Descriptor('pip-services-commons', 'logger', 'console', 'default', '1.0'), logger,
-            new Descriptor('pip-services-net', 'seneca', 'instance', 'default', '1.0'), senecaAddon,
-            new Descriptor('pip-services-statistics', 'persistence', 'memory', 'default', '1.0'), persistence,
-            new Descriptor('pip-services-statistics', 'controller', 'default', 'default', '1.0'), controller,
-            new Descriptor('pip-services-statistics', 'service', 'seneca', 'default', '1.0'), service
+        let config = ConfigParams.fromTuples(
+            'logger.descriptor', 'pip-services-commons:logger:console:default:1.0',
+            'persistence.descriptor', 'pip-services-statistics:persistence:memory:default:1.0',
+            'controller.descriptor', 'pip-services-statistics:controller:default:default:1.0'
         );
 
-        controller.setReferences(references);
-        service.setReferences(references);
-
-        seneca = senecaAddon.getInstance();
-
-        service.open(null, done);
+        lambda = new StatisticsLambdaFunction();
+        lambda.configure(config);
+        lambda.open(null, done);
     });
     
     suiteTeardown((done) => {
-        service.close(null, done);
-    });
-    
-    setup((done) => {
-        persistence.clear(null, done);
+        lambda.close(null, done);
     });
     
     test('CRUD Operations', (done) => {
         async.series([
         // Increment counter
             (callback) => {
-                seneca.act(
+                lambda.act(
                     {
                         role: 'statistics',
                         cmd: 'increment_counter',
@@ -80,7 +57,7 @@ suite('StatisticsSenecaServiceV1', ()=> {
             },
         // Increment the same counter again
             (callback) => {
-                seneca.act(
+                lambda.act(
                     {
                         role: 'statistics',
                         cmd: 'increment_counter',
@@ -98,7 +75,7 @@ suite('StatisticsSenecaServiceV1', ()=> {
             },
         // Check all counters
             (callback) => {
-                seneca.act(
+                lambda.act(
                     {
                         role: 'statistics',
                         cmd: 'get_counters',
@@ -115,7 +92,7 @@ suite('StatisticsSenecaServiceV1', ()=> {
             },
         // Check total counters
             (callback) => {
-                seneca.act(
+                lambda.act(
                     {
                         role: 'statistics',
                         cmd: 'read_one_counter',
@@ -138,12 +115,12 @@ suite('StatisticsSenecaServiceV1', ()=> {
             },
         // Check monthly counters
             (callback) => {
-                seneca.act(
+                lambda.act(
                     {
                         role: 'statistics',
                         cmd: 'read_counters',
                         counters: [ new StatCounterV1('test', 'value1') ], 
-                        type: StatCounterTypeV1.Hour,
+                        type: StatCounterTypeV1.Hour, 
                         from_time: DateTimeConverter.toDateTime('1975-04-09T19:00:00.00Z'),
                         to_time: DateTimeConverter.toDateTime('1975-04-09T19:00:00.00Z'),
                     },
