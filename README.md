@@ -23,6 +23,60 @@ This microservice has no dependencies on other microservices.
   - [HTTP Version 1](doc/HttpProtocolV1.md)
   - [Seneca Version 1](doc/SenecaProtocolV1.md)
 
+##  Contract
+
+Logical contract of the microservice is presented below. For physical implementation (HTTP/REST, Thrift, Seneca, Lambda, etc.),
+please, refer to documentation of the specific protocol.
+
+```typescript
+enum StatCounterTypeV1
+{
+    Total = 0,
+    Year = 1,
+    Month = 2,
+    Day = 3,
+    Hour = 4
+}
+
+class StatCounterV1
+{
+    public group: string;
+    public name: string;
+}
+
+class StatCounterValueV1
+{
+    public year: number;
+    public month: number;
+    public day: number;
+    public hour: number;
+    public value: number;
+}
+
+class StatCounterSetV1
+{
+    public group: string;
+    public name: string;
+    public type: StatCounterTypeV1;
+    public values: StatCounterValueV1[];
+}
+
+interface IStatisticsV1 {
+    getCounters(correlationId: string, filter: FilterParams, paging: PagingParams, 
+        callback: (err: any, page: DataPage<StatCounterV1>) => void): void;
+    
+    incrementCounter(correlationId: string, group: string, name: string,
+        time: Date, value: number, callback?: (err: any) => void): void;
+
+    readOneCounter(correlationId: string, group: string, name: string, type: StatCounterTypeV1,
+        fromTime: Date, toTime: Date, callback: (err: any, value: StatCounterSetV1) => void): void;
+
+    readCounters(correlationId: string, counters: StatCounterV1[], type: StatCounterTypeV1,
+        fromTime: Date, toTime: Date, callback: (err: any, values: StatCounterSetV1[]) => void): void;
+}
+
+```
+
 ## Download
 
 Right now the only way to get the microservice is to check it out directly from github repository
