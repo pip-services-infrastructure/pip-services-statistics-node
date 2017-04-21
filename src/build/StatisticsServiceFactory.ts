@@ -8,7 +8,7 @@ import { StatisticsController } from '../logic/StatisticsController';
 import { StatisticsHttpServiceV1 } from '../services/version1/StatisticsHttpServiceV1';
 import { StatisticsSenecaServiceV1 } from '../services/version1/StatisticsSenecaServiceV1'; 
 
-export class StatisticsFactory extends Factory {
+export class StatisticsServiceFactory extends Factory {
 	public static Descriptor = new Descriptor("pip-services-statistics", "factory", "default", "default", "1.0");
 	public static MemoryPersistenceDescriptor = new Descriptor("pip-services-statistics", "persistence", "memory", "*", "1.0");
 	public static FilePersistenceDescriptor = new Descriptor("pip-services-statistics", "persistence", "file", "*", "1.0");
@@ -19,12 +19,12 @@ export class StatisticsFactory extends Factory {
 	
 	constructor() {
 		super();
-		this.registerAsType(StatisticsFactory.MemoryPersistenceDescriptor, StatisticsMemoryPersistence);
-		this.registerAsType(StatisticsFactory.FilePersistenceDescriptor, StatisticsFilePersistence);
-		this.registerAsType(StatisticsFactory.MongoDbPersistenceDescriptor, StatisticsMongoDbPersistence);
-		this.registerAsType(StatisticsFactory.ControllerDescriptor, StatisticsController);
-		this.registerAsType(StatisticsFactory.SenecaServiceDescriptor, StatisticsSenecaServiceV1);
-		this.registerAsType(StatisticsFactory.HttpServiceDescriptor, StatisticsHttpServiceV1);
+		this.registerAsType(StatisticsServiceFactory.MemoryPersistenceDescriptor, StatisticsMemoryPersistence);
+		this.registerAsType(StatisticsServiceFactory.FilePersistenceDescriptor, StatisticsFilePersistence);
+		this.registerAsType(StatisticsServiceFactory.MongoDbPersistenceDescriptor, StatisticsMongoDbPersistence);
+		this.registerAsType(StatisticsServiceFactory.ControllerDescriptor, StatisticsController);
+		this.registerAsType(StatisticsServiceFactory.SenecaServiceDescriptor, StatisticsSenecaServiceV1);
+		this.registerAsType(StatisticsServiceFactory.HttpServiceDescriptor, StatisticsHttpServiceV1);
 	}
 	
 }

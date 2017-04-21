@@ -1,5 +1,5 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var StatisticsFactory_1 = require("./StatisticsFactory");
-exports.StatisticsFactory = StatisticsFactory_1.StatisticsFactory;
+var StatisticsServiceFactory_1 = require("./StatisticsServiceFactory");
+exports.StatisticsServiceFactory = StatisticsServiceFactory_1.StatisticsServiceFactory;
 //# sourceMappingURL=index.js.map
