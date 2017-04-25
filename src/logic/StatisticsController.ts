@@ -18,10 +18,10 @@ import { StatCounterV1 } from '../data/version1/StatCounterV1';
 import { StatCounterValueV1 } from '../data/version1/StatCounterValueV1';
 import { StatCounterSetV1 } from '../data/version1/StatCounterSetV1';
 import { IStatisticsPersistence } from '../persistence/IStatisticsPersistence';
-import { IStatisticsBusinessLogic } from './IStatisticsBusinessLogic';
+import { IStatisticsController } from './IStatisticsController';
 import { StatisticsCommandSet } from './StatisticsCommandSet';
 
-export class StatisticsController implements IConfigurable, IReferenceable, ICommandable, IStatisticsBusinessLogic {
+export class StatisticsController implements IConfigurable, IReferenceable, ICommandable, IStatisticsController {
     private static _defaultConfig: ConfigParams = ConfigParams.fromTuples(
         'dependencies.persistence', 'pip-services-statistics:persistence:*:*:1.0'
     );

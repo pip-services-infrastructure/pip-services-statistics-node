@@ -14,12 +14,12 @@ import { PagingParamsSchema } from 'pip-services-commons-node';
 import { StatCounterV1Schema } from '../data/version1/StatCounterV1Schema';
 import { StatCounterV1 } from '../data/version1/StatCounterV1';
 import { StatCounterSetV1 } from '../data/version1/StatCounterSetV1';
-import { IStatisticsBusinessLogic } from './IStatisticsBusinessLogic';
+import { IStatisticsController } from './IStatisticsController';
 
 export class StatisticsCommandSet extends CommandSet {
-    private _logic: IStatisticsBusinessLogic;
+    private _logic: IStatisticsController;
 
-	constructor(logic: IStatisticsBusinessLogic) {
+	constructor(logic: IStatisticsController) {
 		super();
 
 		this._logic = logic;

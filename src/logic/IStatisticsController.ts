@@ -6,7 +6,7 @@ import { StatCounterTypeV1 } from '../data/version1/StatCounterTypeV1';
 import { StatCounterV1 } from '../data/version1/StatCounterV1';
 import { StatCounterSetV1 } from '../data/version1/StatCounterSetV1';
 
-export interface IStatisticsBusinessLogic {
+export interface IStatisticsController {
     getCounters(correlationId: string, filter: FilterParams, paging: PagingParams, 
         callback: (err: any, page: DataPage<StatCounterV1>) => void): void;
     

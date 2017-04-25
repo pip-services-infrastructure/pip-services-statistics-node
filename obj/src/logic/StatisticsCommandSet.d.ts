@@ -1,8 +1,8 @@
 import { CommandSet } from 'pip-services-commons-node';
-import { IStatisticsBusinessLogic } from './IStatisticsBusinessLogic';
+import { IStatisticsController } from './IStatisticsController';
 export declare class StatisticsCommandSet extends CommandSet {
     private _logic;
-    constructor(logic: IStatisticsBusinessLogic);
+    constructor(logic: IStatisticsController);
     private makeGetContersCommand();
     private makeIncrementCounterCommand();
     private makeReadOneCounterCommand();

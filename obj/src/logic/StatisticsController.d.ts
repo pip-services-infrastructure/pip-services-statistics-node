@@ -10,8 +10,8 @@ import { CommandSet } from 'pip-services-commons-node';
 import { StatCounterTypeV1 } from '../data/version1/StatCounterTypeV1';
 import { StatCounterV1 } from '../data/version1/StatCounterV1';
 import { StatCounterSetV1 } from '../data/version1/StatCounterSetV1';
-import { IStatisticsBusinessLogic } from './IStatisticsBusinessLogic';
-export declare class StatisticsController implements IConfigurable, IReferenceable, ICommandable, IStatisticsBusinessLogic {
+import { IStatisticsController } from './IStatisticsController';
+export declare class StatisticsController implements IConfigurable, IReferenceable, ICommandable, IStatisticsController {
     private static _defaultConfig;
     private _dependencyResolver;
     private _persistence;

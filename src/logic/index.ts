@@ -1,2 +1,2 @@
-export { IStatisticsBusinessLogic } from './IStatisticsBusinessLogic';
+export { IStatisticsController } from './IStatisticsController';
 export { StatisticsController } from './StatisticsController';
