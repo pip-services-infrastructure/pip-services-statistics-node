@@ -15,10 +15,13 @@ export declare class StatisticsController implements IConfigurable, IReferenceab
     private static _defaultConfig;
     private _dependencyResolver;
     private _persistence;
+    private _facetsClient;
     private _commandSet;
+    private _facetsGroup;
     configure(config: ConfigParams): void;
     setReferences(references: IReferences): void;
     getCommandSet(): CommandSet;
+    getGroups(correlationId: string, paging: PagingParams, callback: (err: any, page: DataPage<string>) => void): void;
     getCounters(correlationId: string, filter: FilterParams, paging: PagingParams, callback: (err: any, page: DataPage<StatCounterV1>) => void): void;
     incrementCounter(correlationId: string, group: string, name: string, time: Date, value: number, callback?: (err: any) => void): void;
     readOneCounter(correlationId: string, group: string, name: string, type: StatCounterTypeV1, fromTime: Date, toTime: Date, callback: (err: any, value: StatCounterSetV1) => void): void;

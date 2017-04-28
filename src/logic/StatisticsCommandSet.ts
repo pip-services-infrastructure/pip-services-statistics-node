@@ -25,10 +25,23 @@ export class StatisticsCommandSet extends CommandSet {
 		this._logic = logic;
 
 		// Register commands to the database
+		this.addCommand(this.makeGetGroupsCommand());
 		this.addCommand(this.makeGetContersCommand());
 		this.addCommand(this.makeIncrementCounterCommand());
 		this.addCommand(this.makeReadCountersCommand());
 		this.addCommand(this.makeReadOneCounterCommand());
+	}
+
+	private makeGetGroupsCommand(): ICommand {
+		return new Command(
+			"get_groups",
+			new ObjectSchema(true)
+				.withOptionalProperty('paging', new PagingParamsSchema()),
+			(correlationId: string, args: Parameters, callback: (err: any, result: any) => void) => {
+				let paging = PagingParams.fromValue(args.get("paging"));
+				this._logic.getGroups(correlationId, paging, callback);
+			}
+		);
 	}
 
 	private makeGetContersCommand(): ICommand {

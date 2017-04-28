@@ -21,6 +21,38 @@ export class StatisticsMongoDbPersistence
         this._maxPageSize = 1000;
     }
 
+    public getGroups(correlationId: string, paging: PagingParams,
+        callback: (err: any, page: DataPage<string>) => void): void {
+        
+        // Extract a page
+        paging = paging != null ? paging : new PagingParams();
+        let skip = paging.getSkip(-1);
+        let take = paging.getTake(this._maxPageSize);
+
+        let filter = { type: 0 };
+        let options = { select: "group" };
+        
+        this._model.find({}, options, (err, items) => {
+            if (items != null) {
+                items = _.map(items, (item) => item.group);
+                items = _.uniq(items);
+            
+                let total = null;
+                if (paging.total)
+                    total = items.length;
+                
+                if (skip > 0)
+                    items = _.slice(items, skip);
+                items = _.take(items, take);
+                        
+                let page = new DataPage<string>(items, total);
+                callback(null, page);
+            } else {
+                callback(err, null);
+            }
+        });
+    }
+
     private composeFilter(filter: FilterParams): any {
         filter = filter || new FilterParams();
 
@@ -116,12 +148,16 @@ export class StatisticsMongoDbPersistence
     }
 
     public increment(correlationId: string, group: string, name: string,
-        time: Date, value: number,  callback?: (err: any) => void): void {
+        time: Date, value: number,  callback?: (err: any, added: boolean) => void): void {
+        let added = false;
         async.parallel([
             (callback) => {
                 this.incrementOne(
                     correlationId, group, name, StatCounterTypeV1.Total, time, value,
-                    callback
+                    (err, data) => {
+                        added = data != null ? data.value == value : false;
+                        callback();
+                    }
                 );
             },
             (callback) => {
@@ -151,7 +187,7 @@ export class StatisticsMongoDbPersistence
         ], (err) => {
             if (err == null)
                this._logger.trace(correlationId, "Incremented %s.%s", group, name);
-            if (callback) callback(err)
+            if (callback) callback(err, added)
         });
     }
 }

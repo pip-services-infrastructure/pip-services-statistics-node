@@ -113,6 +113,23 @@ suite('StatisticsSenecaServiceV1', ()=> {
                     }
                 );
             },
+        // Check all groups
+            (callback) => {
+                seneca.act(
+                    {
+                        role: 'statistics',
+                        cmd: 'get_groups',
+                    },
+                    (err, page) => {
+                        assert.isNull(err);
+
+                        assert.isObject(page);
+                        assert.lengthOf(page.data, 1);
+
+                        callback();
+                    }
+                );
+            },
         // Check total counters
             (callback) => {
                 seneca.act(

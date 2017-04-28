@@ -59,6 +59,21 @@ export class StatisticsPersistenceFixture {
                     }
                 );
             },
+        // Check groups
+            (callback) => {
+                this._persistence.getGroups(
+                    null,
+                    new PagingParams(),
+                    (err, page) => {
+                        assert.isNull(err);
+
+                        assert.isObject(page);
+                        assert.lengthOf(page.data, 1);
+
+                        callback();
+                    }
+                );
+            },
         // Check total counters
             (callback) => {
                 this._persistence.getPageByFilter(

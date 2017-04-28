@@ -8,6 +8,7 @@
 * **seneca** Seneca client, service and plugin
 * **lambda** AWS lambda service
 * **unit tests** Unit tests using Mocha and Matcha
+* Added faceted search for groups
 
 #### Breaking Changes
 No breaking changes since this is the first version

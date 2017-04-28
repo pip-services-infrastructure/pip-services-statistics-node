@@ -19,6 +19,28 @@ export class StatisticsMemoryPersistence extends IdentifiableMemoryPersistence<S
         this._maxPageSize = 1000;
     }
 
+    public getGroups(correlationId: string, paging: PagingParams,
+        callback: (err: any, page: DataPage<string>) => void): void {
+        let items = _.map(this._items, (item) => item.group);
+        items = _.uniq(items);
+
+        // Extract a page
+        paging = paging != null ? paging : new PagingParams();
+        let skip = paging.getSkip(-1);
+        let take = paging.getTake(this._maxPageSize);
+
+        let total = null;
+        if (paging.total)
+            total = items.length;
+        
+        if (skip > 0)
+            items = _.slice(items, skip);
+        items = _.take(items, take);
+                
+        let page = new DataPage<string>(items, total);
+        callback(null, page);
+    }
+
     private matchString(value: string, search: string): boolean {
         if (value == null && search == null)
             return true;
@@ -91,8 +113,11 @@ export class StatisticsMemoryPersistence extends IdentifiableMemoryPersistence<S
     }
 
     public increment(correlationId: string, group: string, name: string,
-        time: Date, value: number,  callback?: (err: any) => void): void {
-        this.incrementOne(correlationId, group, name, StatCounterTypeV1.Total, time, value);
+        time: Date, value: number,  callback?: (err: any, added: boolean) => void): void {
+        let added = false;
+        this.incrementOne(correlationId, group, name, StatCounterTypeV1.Total, time, value, (err, data) => {
+            added = data.value == value;
+        });
         this.incrementOne(correlationId, group, name, StatCounterTypeV1.Year, time, value);
         this.incrementOne(correlationId, group, name, StatCounterTypeV1.Month, time, value);
         this.incrementOne(correlationId, group, name, StatCounterTypeV1.Day, time, value);
@@ -101,7 +126,7 @@ export class StatisticsMemoryPersistence extends IdentifiableMemoryPersistence<S
         this._logger.trace(correlationId, "Incremented %s.%s", group, name);
 
         this.save(correlationId, (err) => {
-            if (callback) callback(err)
+            if (callback) callback(err, added);
         });    
     }
 

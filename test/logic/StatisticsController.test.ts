@@ -11,6 +11,8 @@ import { References } from 'pip-services-commons-node';
 import { ConsoleLogger } from 'pip-services-commons-node';
 import { SenecaInstance } from 'pip-services-net-node';
 
+import { FacetsMemoryClientV1 } from 'pip-clients-facets-node';
+
 import { StatCounterV1 } from '../../src/data/version1/StatCounterV1';
 import { StatCounterSetV1 } from '../../src/data/version1/StatCounterSetV1';
 import { StatCounterTypeV1 } from '../../src/data/version1/StatCounterTypeV1';
@@ -24,12 +26,14 @@ suite('StatisticsController', ()=> {
     suiteSetup(() => {
         persistence = new StatisticsMemoryPersistence();
         controller = new StatisticsController();
+        let facetsClient = new FacetsMemoryClientV1();
 
         let logger = new ConsoleLogger();
 
         let references: References = References.fromTuples(
             new Descriptor('pip-services-commons', 'logger', 'console', 'default', '1.0'), logger,
             new Descriptor('pip-services-statistics', 'persistence', 'memory', 'default', '1.0'), persistence,
+            new Descriptor('pip-clients-facets', 'client', 'default', 'default', '1.0'), facetsClient,
             new Descriptor('pip-services-statistics', 'controller', 'default', 'default', '1.0'), controller
         );
 
@@ -70,6 +74,21 @@ suite('StatisticsController', ()=> {
             (callback) => {
                 controller.getCounters(
                     null,
+                    null,
+                    new PagingParams(),
+                    (err, page) => {
+                        assert.isNull(err);
+
+                        assert.isObject(page);
+                        assert.lengthOf(page.data, 1);
+
+                        callback();
+                    }
+                );
+            },
+        // Check all counters
+            (callback) => {
+                controller.getGroups(
                     null,
                     new PagingParams(),
                     (err, page) => {

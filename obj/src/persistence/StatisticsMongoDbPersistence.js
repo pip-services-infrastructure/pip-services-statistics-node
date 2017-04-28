@@ -3,6 +3,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 let _ = require('lodash');
 let async = require('async');
 const pip_services_commons_node_1 = require("pip-services-commons-node");
+const pip_services_commons_node_2 = require("pip-services-commons-node");
+const pip_services_commons_node_3 = require("pip-services-commons-node");
 const pip_services_data_node_1 = require("pip-services-data-node");
 const StatCounterTypeV1_1 = require("../data/version1/StatCounterTypeV1");
 const StatCounterRecordV1_1 = require("../data/version1/StatCounterRecordV1");
@@ -12,6 +14,31 @@ class StatisticsMongoDbPersistence extends pip_services_data_node_1.Identifiable
     constructor() {
         super('statistics', StatRecordsMongoDbSchema_1.StatRecordsMongoDbSchema());
         this._maxPageSize = 1000;
+    }
+    getGroups(correlationId, paging, callback) {
+        // Extract a page
+        paging = paging != null ? paging : new pip_services_commons_node_2.PagingParams();
+        let skip = paging.getSkip(-1);
+        let take = paging.getTake(this._maxPageSize);
+        let filter = { type: 0 };
+        let options = { select: "group" };
+        this._model.find({}, options, (err, items) => {
+            if (items != null) {
+                items = _.map(items, (item) => item.group);
+                items = _.uniq(items);
+                let total = null;
+                if (paging.total)
+                    total = items.length;
+                if (skip > 0)
+                    items = _.slice(items, skip);
+                items = _.take(items, take);
+                let page = new pip_services_commons_node_3.DataPage(items, total);
+                callback(null, page);
+            }
+            else {
+                callback(err, null);
+            }
+        });
     }
     composeFilter(filter) {
         filter = filter || new pip_services_commons_node_1.FilterParams();
@@ -90,9 +117,13 @@ class StatisticsMongoDbPersistence extends pip_services_data_node_1.Identifiable
         });
     }
     increment(correlationId, group, name, time, value, callback) {
+        let added = false;
         async.parallel([
             (callback) => {
-                this.incrementOne(correlationId, group, name, StatCounterTypeV1_1.StatCounterTypeV1.Total, time, value, callback);
+                this.incrementOne(correlationId, group, name, StatCounterTypeV1_1.StatCounterTypeV1.Total, time, value, (err, data) => {
+                    added = data != null ? data.value == value : false;
+                    callback();
+                });
             },
             (callback) => {
                 this.incrementOne(correlationId, group, name, StatCounterTypeV1_1.StatCounterTypeV1.Year, time, value, callback);
@@ -110,7 +141,7 @@ class StatisticsMongoDbPersistence extends pip_services_data_node_1.Identifiable
             if (err == null)
                 this._logger.trace(correlationId, "Incremented %s.%s", group, name);
             if (callback)
-                callback(err);
+                callback(err, added);
         });
     }
 }

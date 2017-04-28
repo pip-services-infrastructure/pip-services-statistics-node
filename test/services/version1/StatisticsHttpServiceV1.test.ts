@@ -102,6 +102,20 @@ suite('StatisticsHttpServiceV1', ()=> {
                     }
                 );
             },
+        // Check all groups
+            (callback) => {
+                rest.post('/statistics/get_groups',
+                    { },
+                    (err, req, res, page) => {
+                        assert.isNull(err);
+
+                        assert.isObject(page);
+                        assert.lengthOf(page.data, 1);
+
+                        callback();
+                    }
+                );
+            },
         // Check total counters
             (callback) => {
                 rest.post('/statistics/read_one_counter',

@@ -2,6 +2,8 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 let _ = require('lodash');
 const pip_services_commons_node_1 = require("pip-services-commons-node");
+const pip_services_commons_node_2 = require("pip-services-commons-node");
+const pip_services_commons_node_3 = require("pip-services-commons-node");
 const pip_services_data_node_1 = require("pip-services-data-node");
 const StatCounterTypeV1_1 = require("../data/version1/StatCounterTypeV1");
 const StatCounterRecordV1_1 = require("../data/version1/StatCounterRecordV1");
@@ -10,6 +12,22 @@ class StatisticsMemoryPersistence extends pip_services_data_node_1.IdentifiableM
     constructor() {
         super();
         this._maxPageSize = 1000;
+    }
+    getGroups(correlationId, paging, callback) {
+        let items = _.map(this._items, (item) => item.group);
+        items = _.uniq(items);
+        // Extract a page
+        paging = paging != null ? paging : new pip_services_commons_node_2.PagingParams();
+        let skip = paging.getSkip(-1);
+        let take = paging.getTake(this._maxPageSize);
+        let total = null;
+        if (paging.total)
+            total = items.length;
+        if (skip > 0)
+            items = _.slice(items, skip);
+        items = _.take(items, take);
+        let page = new pip_services_commons_node_3.DataPage(items, total);
+        callback(null, page);
     }
     matchString(value, search) {
         if (value == null && search == null)
@@ -73,7 +91,10 @@ class StatisticsMemoryPersistence extends pip_services_data_node_1.IdentifiableM
             callback(null, item);
     }
     increment(correlationId, group, name, time, value, callback) {
-        this.incrementOne(correlationId, group, name, StatCounterTypeV1_1.StatCounterTypeV1.Total, time, value);
+        let added = false;
+        this.incrementOne(correlationId, group, name, StatCounterTypeV1_1.StatCounterTypeV1.Total, time, value, (err, data) => {
+            added = data.value == value;
+        });
         this.incrementOne(correlationId, group, name, StatCounterTypeV1_1.StatCounterTypeV1.Year, time, value);
         this.incrementOne(correlationId, group, name, StatCounterTypeV1_1.StatCounterTypeV1.Month, time, value);
         this.incrementOne(correlationId, group, name, StatCounterTypeV1_1.StatCounterTypeV1.Day, time, value);
@@ -81,7 +102,7 @@ class StatisticsMemoryPersistence extends pip_services_data_node_1.IdentifiableM
         this._logger.trace(correlationId, "Incremented %s.%s", group, name);
         this.save(correlationId, (err) => {
             if (callback)
-                callback(err);
+                callback(err, added);
         });
     }
 }

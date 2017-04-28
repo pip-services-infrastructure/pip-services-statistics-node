@@ -7,6 +7,9 @@ import { StatCounterV1 } from '../data/version1/StatCounterV1';
 import { StatCounterSetV1 } from '../data/version1/StatCounterSetV1';
 
 export interface IStatisticsController {
+    getGroups(correlationId: string, paging: PagingParams,
+        callback: (err: any, page: DataPage<string>) => void): void;
+
     getCounters(correlationId: string, filter: FilterParams, paging: PagingParams, 
         callback: (err: any, page: DataPage<StatCounterV1>) => void): void;
     

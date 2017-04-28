@@ -3,6 +3,7 @@ import { IStatisticsController } from './IStatisticsController';
 export declare class StatisticsCommandSet extends CommandSet {
     private _logic;
     constructor(logic: IStatisticsController);
+    private makeGetGroupsCommand();
     private makeGetContersCommand();
     private makeIncrementCounterCommand();
     private makeReadOneCounterCommand();

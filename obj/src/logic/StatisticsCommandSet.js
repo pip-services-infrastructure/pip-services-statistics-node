@@ -15,10 +15,18 @@ class StatisticsCommandSet extends pip_services_commons_node_1.CommandSet {
         super();
         this._logic = logic;
         // Register commands to the database
+        this.addCommand(this.makeGetGroupsCommand());
         this.addCommand(this.makeGetContersCommand());
         this.addCommand(this.makeIncrementCounterCommand());
         this.addCommand(this.makeReadCountersCommand());
         this.addCommand(this.makeReadOneCounterCommand());
+    }
+    makeGetGroupsCommand() {
+        return new pip_services_commons_node_2.Command("get_groups", new pip_services_commons_node_5.ObjectSchema(true)
+            .withOptionalProperty('paging', new pip_services_commons_node_9.PagingParamsSchema()), (correlationId, args, callback) => {
+            let paging = pip_services_commons_node_4.PagingParams.fromValue(args.get("paging"));
+            this._logic.getGroups(correlationId, paging, callback);
+        });
     }
     makeGetContersCommand() {
         return new pip_services_commons_node_2.Command("get_counters", new pip_services_commons_node_5.ObjectSchema(true)

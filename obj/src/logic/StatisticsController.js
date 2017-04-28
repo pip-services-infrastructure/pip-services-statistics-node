@@ -14,18 +14,39 @@ const StatisticsCommandSet_1 = require("./StatisticsCommandSet");
 class StatisticsController {
     constructor() {
         this._dependencyResolver = new pip_services_commons_node_2.DependencyResolver(StatisticsController._defaultConfig);
+        this._facetsGroup = 'statistics';
     }
     configure(config) {
         this._dependencyResolver.configure(config);
+        this._facetsGroup = config.getAsStringWithDefault('options.facets_group', this._facetsGroup);
     }
     setReferences(references) {
         this._dependencyResolver.setReferences(references);
         this._persistence = this._dependencyResolver.getOneRequired('persistence');
+        this._facetsClient = this._dependencyResolver.getOneOptional('facets');
     }
     getCommandSet() {
         if (this._commandSet == null)
             this._commandSet = new StatisticsCommandSet_1.StatisticsCommandSet(this);
         return this._commandSet;
+    }
+    getGroups(correlationId, paging, callback) {
+        // When facets client is defined then use it to retrieve groups
+        if (this._facetsClient != null) {
+            this._facetsClient.getFacetsByGroup(correlationId, this._facetsGroup, paging, (err, page) => {
+                if (page != null) {
+                    let data = _.map(page.data, (facet) => facet.group);
+                    let result = new pip_services_commons_node_4.DataPage(data, page.total);
+                    callback(err, result);
+                }
+                else {
+                    callback(err, null);
+                }
+            });
+        }
+        else {
+            this._persistence.getGroups(correlationId, paging, callback);
+        }
     }
     getCounters(correlationId, filter, paging, callback) {
         filter = filter || new pip_services_commons_node_3.FilterParams();
@@ -40,7 +61,19 @@ class StatisticsController {
         });
     }
     incrementCounter(correlationId, group, name, time, value, callback) {
-        this._persistence.increment(correlationId, group, name, time, value, callback);
+        this._persistence.increment(correlationId, group, name, time, value, (err, added) => {
+            // When facets client is defined then record facets
+            if (err == null && this._facetsClient != null && added) {
+                this._facetsClient.addFacet(correlationId, this._facetsGroup, group, (err) => {
+                    if (callback)
+                        callback(err);
+                });
+            }
+            else {
+                if (callback)
+                    callback(err);
+            }
+        });
     }
     readOneCounter(correlationId, group, name, type, fromTime, toTime, callback) {
         let filter = pip_services_commons_node_3.FilterParams.fromTuples('group', group, 'name', name, 'type', type, 'from_time', fromTime, 'to_time', toTime);
@@ -71,6 +104,6 @@ class StatisticsController {
         });
     }
 }
-StatisticsController._defaultConfig = pip_services_commons_node_1.ConfigParams.fromTuples('dependencies.persistence', 'pip-services-statistics:persistence:*:*:1.0');
+StatisticsController._defaultConfig = pip_services_commons_node_1.ConfigParams.fromTuples('dependencies.persistence', 'pip-services-statistics:persistence:*:*:1.0', 'dependencies.facets', 'pip-clients-facets:client:*:*:1.0', 'options.facets_group', 'statistics');
 exports.StatisticsController = StatisticsController;
 //# sourceMappingURL=StatisticsController.js.map
