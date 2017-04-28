@@ -22,7 +22,7 @@ class StatisticsMongoDbPersistence extends pip_services_data_node_1.Identifiable
         let take = paging.getTake(this._maxPageSize);
         let filter = { type: 0 };
         let options = { select: "group" };
-        this._model.find({}, options, (err, items) => {
+        this._model.find(filter, options, (err, items) => {
             if (items != null) {
                 items = _.map(items, (item) => item.group);
                 items = _.uniq(items);
