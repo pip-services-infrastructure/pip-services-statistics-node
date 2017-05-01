@@ -87,17 +87,17 @@ export class StatisticsMongoDbPersistence
         let toTime = filter.getAsNullableDateTime('to_time');
         let toId = toTime != null ? StatCounterKeyGenerator.makeCounterKey(group, name, type, toTime) : null;
         if (toId != null)
-            criteria.push({ _id: { $lt: toId } });
+            criteria.push({ _id: { $lte: toId } });
 
         return criteria.length > 0 ? { $and: criteria } : {};
     }
 
     public getPageByFilter(correlationId: string, filter: FilterParams, paging: PagingParams, callback: any) {
-        super.getPageByFilter(correlationId, this.composeFilter(filter), paging, '-_id', null, callback);
+        super.getPageByFilter(correlationId, this.composeFilter(filter), paging, null, null, callback);
     }
 
     public getListByFilter(correlationId: string, filter: FilterParams, callback: any) {
-        super.getListByFilter(correlationId, this.composeFilter(filter), '-_id', null, callback);
+        super.getListByFilter(correlationId, this.composeFilter(filter), null, null, callback);
     }
 
     private incrementOne(correlationId: string, group: string, name: string, type: StatCounterTypeV1,

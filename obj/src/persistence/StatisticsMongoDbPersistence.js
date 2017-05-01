@@ -67,14 +67,14 @@ class StatisticsMongoDbPersistence extends pip_services_data_node_1.Identifiable
         let toTime = filter.getAsNullableDateTime('to_time');
         let toId = toTime != null ? StatCounterKeyGenerator_1.StatCounterKeyGenerator.makeCounterKey(group, name, type, toTime) : null;
         if (toId != null)
-            criteria.push({ _id: { $lt: toId } });
+            criteria.push({ _id: { $lte: toId } });
         return criteria.length > 0 ? { $and: criteria } : {};
     }
     getPageByFilter(correlationId, filter, paging, callback) {
-        super.getPageByFilter(correlationId, this.composeFilter(filter), paging, '-_id', null, callback);
+        super.getPageByFilter(correlationId, this.composeFilter(filter), paging, null, null, callback);
     }
     getListByFilter(correlationId, filter, callback) {
-        super.getListByFilter(correlationId, this.composeFilter(filter), '-_id', null, callback);
+        super.getListByFilter(correlationId, this.composeFilter(filter), null, null, callback);
     }
     incrementOne(correlationId, group, name, type, time, value, callback) {
         let id = StatCounterKeyGenerator_1.StatCounterKeyGenerator.makeCounterKey(group, name, type, time);
