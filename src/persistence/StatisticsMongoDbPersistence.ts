@@ -30,7 +30,7 @@ export class StatisticsMongoDbPersistence
         let take = paging.getTake(this._maxPageSize);
 
         let filter = { type: 0 };
-        let options = { select: "group" };
+        let options = { group: 1 };
         
         this._model.find(filter, options, (err, items) => {
             if (items != null) {
