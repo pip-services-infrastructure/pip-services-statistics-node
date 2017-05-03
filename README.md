@@ -74,6 +74,9 @@ interface IStatisticsV1 {
     readOneCounter(correlationId: string, group: string, name: string, type: StatCounterTypeV1,
         fromTime: Date, toTime: Date, callback: (err: any, value: StatCounterSetV1) => void): void;
 
+    readCountersByGroup(correlationId: string, group: string, type: StatCounterTypeV1,
+        fromTime: Date, toTime: Date, callback: (err: any, values: StatCounterSetV1[]) => void): void;
+
     readCounters(correlationId: string, counters: StatCounterV1[], type: StatCounterTypeV1,
         fromTime: Date, toTime: Date, callback: (err: any, values: StatCounterSetV1[]) => void): void;
 }
