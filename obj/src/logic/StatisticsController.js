@@ -91,6 +91,29 @@ class StatisticsController {
                 callback(null, set);
         });
     }
+    readCountersByGroup(correlationId, group, type, fromTime, toTime, callback) {
+        let filter = pip_services_commons_node_3.FilterParams.fromTuples('group', group, 'type', type, 'from_time', fromTime, 'to_time', toTime);
+        this._persistence.getListByFilter(correlationId, filter, (err, records) => {
+            if (err) {
+                if (callback)
+                    callback(err, null);
+                return;
+            }
+            let sets = {};
+            let values = [];
+            _.each(records, (x) => {
+                let set = sets[x.name];
+                if (set == null) {
+                    set = new StatCounterSetV1_1.StatCounterSetV1(x.group, x.name, type, []);
+                    sets[x.name] = set;
+                    values.push(set);
+                }
+                set.values.push(new StatCounterValueV1_1.StatCounterValueV1(x.year, x.month, x.day, x.hour, x.value));
+            });
+            if (callback)
+                callback(null, values);
+        });
+    }
     readCounters(correlationId, counters, type, fromTime, toTime, callback) {
         let result = [];
         async.each(counters, (counter, callback) => {

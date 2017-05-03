@@ -118,6 +118,26 @@ suite('StatisticsController', ()=> {
                     }
                 );
             },
+        // Check total counters by group
+            (callback) => {
+                controller.readCountersByGroup(
+                    null, 'test', StatCounterTypeV1.Total, null, null,
+                    (err, sets) => {
+                        assert.isNull(err);
+
+                        assert.isArray(sets);
+                        assert.lengthOf(sets, 1);
+                        
+                        let set = sets[0];
+                        assert.lengthOf(set.values, 1);
+
+                        let record = set.values[0];
+                        assert.equal(3, record.value);
+
+                        callback();
+                    }
+                );
+            },
         // Check monthly counters
             (callback) => {
                 controller.readCounters(

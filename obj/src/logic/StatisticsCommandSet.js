@@ -19,6 +19,7 @@ class StatisticsCommandSet extends pip_services_commons_node_1.CommandSet {
         this.addCommand(this.makeGetContersCommand());
         this.addCommand(this.makeIncrementCounterCommand());
         this.addCommand(this.makeReadCountersCommand());
+        this.addCommand(this.makeReadCountersByGroupCommand());
         this.addCommand(this.makeReadOneCounterCommand());
     }
     makeGetGroupsCommand() {
@@ -67,6 +68,20 @@ class StatisticsCommandSet extends pip_services_commons_node_1.CommandSet {
             let fromTime = args.getAsNullableDateTime("from_time");
             let toTime = args.getAsNullableDateTime("to_time");
             this._logic.readOneCounter(correlationId, group, name, type, fromTime, toTime, callback);
+        });
+    }
+    makeReadCountersByGroupCommand() {
+        return new pip_services_commons_node_2.Command("read_counters_by_group", new pip_services_commons_node_5.ObjectSchema(true)
+            .withRequiredProperty('group', pip_services_commons_node_7.TypeCode.String)
+            .withRequiredProperty('type', pip_services_commons_node_7.TypeCode.Long)
+            .withOptionalProperty('from_time', null) //TypeCode.DateTime)
+            .withOptionalProperty('to_time', null), //TypeCode.DateTime)
+        (correlationId, args, callback) => {
+            let group = args.getAsNullableString("group");
+            let type = args.getAsNullableInteger("type");
+            let fromTime = args.getAsNullableDateTime("from_time");
+            let toTime = args.getAsNullableDateTime("to_time");
+            this._logic.readCountersByGroup(correlationId, group, type, fromTime, toTime, callback);
         });
     }
     makeReadCountersCommand() {

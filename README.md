@@ -62,6 +62,9 @@ class StatCounterSetV1
 }
 
 interface IStatisticsV1 {
+    getGroups(correlationId: string, paging: PagingParams,
+        callback: (err: any, page: DataPage<string>) => void): void;
+
     getCounters(correlationId: string, filter: FilterParams, paging: PagingParams, 
         callback: (err: any, page: DataPage<StatCounterV1>) => void): void;
     

@@ -29,6 +29,7 @@ export class StatisticsCommandSet extends CommandSet {
 		this.addCommand(this.makeGetContersCommand());
 		this.addCommand(this.makeIncrementCounterCommand());
 		this.addCommand(this.makeReadCountersCommand());
+		this.addCommand(this.makeReadCountersByGroupCommand());
 		this.addCommand(this.makeReadOneCounterCommand());
 	}
 
@@ -94,6 +95,24 @@ export class StatisticsCommandSet extends CommandSet {
 				let fromTime = args.getAsNullableDateTime("from_time");
 				let toTime = args.getAsNullableDateTime("to_time");
 				this._logic.readOneCounter(correlationId, group, name, type, fromTime, toTime, callback);
+			}
+		);
+	}
+
+	private makeReadCountersByGroupCommand(): ICommand {
+		return new Command(
+			"read_counters_by_group",
+			new ObjectSchema(true)
+				.withRequiredProperty('group', TypeCode.String)
+				.withRequiredProperty('type', TypeCode.Long)
+				.withOptionalProperty('from_time', null) //TypeCode.DateTime)
+				.withOptionalProperty('to_time', null), //TypeCode.DateTime)
+			(correlationId: string, args: Parameters, callback: (err: any, result: any) => void) => {
+				let group = args.getAsNullableString("group");
+				let type = args.getAsNullableInteger("type");
+				let fromTime = args.getAsNullableDateTime("from_time");
+				let toTime = args.getAsNullableDateTime("to_time");
+				this._logic.readCountersByGroup(correlationId, group, type, fromTime, toTime, callback);
 			}
 		);
 	}

@@ -133,6 +133,46 @@ export class StatisticsController implements IConfigurable, IReferenceable, ICom
         })
     }
 
+    public readCountersByGroup(correlationId: string, group: string, type: StatCounterTypeV1,
+        fromTime: Date, toTime: Date, callback: (err: any, values: StatCounterSetV1[]) => void): void {
+        let filter: FilterParams = FilterParams.fromTuples(
+            'group', group,
+            'type', type,
+            'from_time', fromTime,
+            'to_time', toTime
+        );
+        this._persistence.getListByFilter(correlationId, filter, (err, records) => {
+            if (err) {
+                if (callback) callback(err, null);
+                return;
+            }
+
+            let sets: any = {};
+            let values: StatCounterSetV1[] = [];
+
+            _.each(records, (x) => {
+                let set = sets[x.name];
+                if (set == null) {
+                    set = new StatCounterSetV1(x.group, x.name, type, []);
+                    sets[x.name] = set;
+                    values.push(set);
+                }
+
+                set.values.push(
+                    new StatCounterValueV1(
+                        x.year, 
+                        x.month,
+                        x.day,
+                        x.hour,
+                        x.value
+                    )
+                );
+            });
+
+            if (callback) callback(null, values);
+        })
+    }
+
     public readCounters(correlationId: string, counters: StatCounterV1[], type: StatCounterTypeV1,
         fromTime: Date, toTime: Date, callback: (err: any, values: StatCounterSetV1[]) => void): void {
         let result: StatCounterSetV1[] = [];

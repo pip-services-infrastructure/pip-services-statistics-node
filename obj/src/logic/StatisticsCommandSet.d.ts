@@ -7,5 +7,6 @@ export declare class StatisticsCommandSet extends CommandSet {
     private makeGetContersCommand();
     private makeIncrementCounterCommand();
     private makeReadOneCounterCommand();
+    private makeReadCountersByGroupCommand();
     private makeReadCountersCommand();
 }
