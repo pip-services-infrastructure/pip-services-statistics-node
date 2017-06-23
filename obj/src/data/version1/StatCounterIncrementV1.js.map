@@ -1,0 +1,1 @@
+{"version":3,"file":"StatCounterIncrementV1.js","sourceRoot":"","sources":["../../../../src/data/version1/StatCounterIncrementV1.ts"],"names":[],"mappings":";;AAAA;IACI,YAAmB,KAAa,EAAE,IAAY,EAAE,IAAU,EAAE,KAAa;QACrE,IAAI,CAAC,KAAK,GAAG,KAAK,CAAC;QACnB,IAAI,CAAC,IAAI,GAAG,IAAI,CAAC;QACjB,IAAI,CAAC,IAAI,GAAG,IAAI,CAAC;QACjB,IAAI,CAAC,KAAK,GAAG,KAAK,CAAC;IACvB,CAAC;CAMJ;AAZD,wDAYC"}

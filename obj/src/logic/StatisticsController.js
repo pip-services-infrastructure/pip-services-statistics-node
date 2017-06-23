@@ -6,10 +6,11 @@ const pip_services_commons_node_1 = require("pip-services-commons-node");
 const pip_services_commons_node_2 = require("pip-services-commons-node");
 const pip_services_commons_node_3 = require("pip-services-commons-node");
 const pip_services_commons_node_4 = require("pip-services-commons-node");
+const pip_services_commons_node_5 = require("pip-services-commons-node");
 const StatCounterTypeV1_1 = require("../data/version1/StatCounterTypeV1");
 const StatCounterV1_1 = require("../data/version1/StatCounterV1");
 const StatCounterValueV1_1 = require("../data/version1/StatCounterValueV1");
-const StatCounterSetV1_1 = require("../data/version1/StatCounterSetV1");
+const StatCounterValueSetV1_1 = require("../data/version1/StatCounterValueSetV1");
 const StatisticsCommandSet_1 = require("./StatisticsCommandSet");
 class StatisticsController {
     constructor() {
@@ -75,6 +76,12 @@ class StatisticsController {
             }
         });
     }
+    incrementCounters(correlationId, increments, callback) {
+        async.each(increments, (increment, callback) => {
+            increment.time = pip_services_commons_node_5.DateTimeConverter.toDateTimeWithDefault(increment.time, new Date());
+            this.incrementCounter(correlationId, increment.group, increment.name, increment.time, increment.value, callback);
+        }, callback);
+    }
     readOneCounter(correlationId, group, name, type, fromTime, toTime, callback) {
         let filter = pip_services_commons_node_3.FilterParams.fromTuples('group', group, 'name', name, 'type', type, 'from_time', fromTime, 'to_time', toTime);
         this._persistence.getListByFilter(correlationId, filter, (err, records) => {
@@ -83,7 +90,7 @@ class StatisticsController {
                     callback(err, null);
                 return;
             }
-            let set = new StatCounterSetV1_1.StatCounterSetV1(group, name, type, []);
+            let set = new StatCounterValueSetV1_1.StatCounterValueSetV1(group, name, type, []);
             _.each(records, (x) => {
                 set.values.push(new StatCounterValueV1_1.StatCounterValueV1(x.year, x.month, x.day, x.hour, x.value));
             });
@@ -104,7 +111,7 @@ class StatisticsController {
             _.each(records, (x) => {
                 let set = sets[x.name];
                 if (set == null) {
-                    set = new StatCounterSetV1_1.StatCounterSetV1(x.group, x.name, type, []);
+                    set = new StatCounterValueSetV1_1.StatCounterValueSetV1(x.group, x.name, type, []);
                     sets[x.name] = set;
                     values.push(set);
                 }

@@ -1,5 +1,4 @@
-export enum StatCounterTypeV1
-{
+export enum StatCounterTypeV1 {
     Total = 0,
     Year = 1,
     Month = 2,

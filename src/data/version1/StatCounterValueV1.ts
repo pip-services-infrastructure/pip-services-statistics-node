@@ -1,5 +1,5 @@
-export class StatCounterValueV1
-{
+export class StatCounterValueV1 {
+    
     public constructor(year: number, month: number,
         day: number, hour: number, value: number) {
         this.year = year;

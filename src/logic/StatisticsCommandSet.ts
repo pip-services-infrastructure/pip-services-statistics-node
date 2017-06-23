@@ -12,8 +12,9 @@ import { FilterParamsSchema } from 'pip-services-commons-node';
 import { PagingParamsSchema } from 'pip-services-commons-node';
 
 import { StatCounterV1Schema } from '../data/version1/StatCounterV1Schema';
+import { StatCounterIncrementV1Schema } from '../data/version1/StatCounterIncrementV1Schema';
 import { StatCounterV1 } from '../data/version1/StatCounterV1';
-import { StatCounterSetV1 } from '../data/version1/StatCounterSetV1';
+import { StatCounterValueSetV1 } from '../data/version1/StatCounterValueSetV1';
 import { IStatisticsController } from './IStatisticsController';
 
 export class StatisticsCommandSet extends CommandSet {
@@ -28,6 +29,7 @@ export class StatisticsCommandSet extends CommandSet {
 		this.addCommand(this.makeGetGroupsCommand());
 		this.addCommand(this.makeGetContersCommand());
 		this.addCommand(this.makeIncrementCounterCommand());
+		this.addCommand(this.makeIncrementCountersCommand());
 		this.addCommand(this.makeReadCountersCommand());
 		this.addCommand(this.makeReadCountersByGroupCommand());
 		this.addCommand(this.makeReadOneCounterCommand());
@@ -73,6 +75,20 @@ export class StatisticsCommandSet extends CommandSet {
 				let time = args.getAsNullableDateTime("time");
 				let value = args.getAsDouble("value");
 				this._logic.incrementCounter(correlationId, group, name, time, value, (err) => {
+					callback(err, null);
+				});
+			}
+		);
+	}
+
+	private makeIncrementCountersCommand(): ICommand {
+		return new Command(
+			"increment_counters",
+			new ObjectSchema(true)
+				.withRequiredProperty('increments', new ArraySchema(new StatCounterIncrementV1Schema())),
+			(correlationId: string, args: Parameters, callback: (err: any, result: any) => void) => {
+				let increments = args.getAsObject("increments");
+				this._logic.incrementCounters(correlationId, increments, (err) => {
 					callback(err, null);
 				});
 			}

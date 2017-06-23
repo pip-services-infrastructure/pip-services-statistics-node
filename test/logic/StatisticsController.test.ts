@@ -14,7 +14,8 @@ import { SenecaInstance } from 'pip-services-net-node';
 import { FacetsMemoryClientV1 } from 'pip-clients-facets-node';
 
 import { StatCounterV1 } from '../../src/data/version1/StatCounterV1';
-import { StatCounterSetV1 } from '../../src/data/version1/StatCounterSetV1';
+import { StatCounterIncrementV1 } from '../../src/data/version1/StatCounterIncrementV1';
+import { StatCounterValueSetV1 } from '../../src/data/version1/StatCounterValueSetV1';
 import { StatCounterTypeV1 } from '../../src/data/version1/StatCounterTypeV1';
 import { StatisticsMemoryPersistence } from '../../src/persistence/StatisticsMemoryPersistence';
 import { StatisticsController } from '../../src/logic/StatisticsController';
@@ -60,9 +61,16 @@ suite('StatisticsController', ()=> {
             },
         // Increment the same counter again
             (callback) => {
-                controller.incrementCounter(
+                controller.incrementCounters(
                     null,
-                    'test', 'value1', DateTimeConverter.toDateTime('1975-04-09T20:00:00.00Z'), 2,
+                    [ 
+                        <StatCounterIncrementV1>{ 
+                            group: 'test',
+                            name: 'value1',
+                            time: DateTimeConverter.toDateTime('1975-04-09T20:00:00.00Z'),
+                            value: 2
+                        }
+                    ],
                     (err) => {
                         assert.isNull(err);
 

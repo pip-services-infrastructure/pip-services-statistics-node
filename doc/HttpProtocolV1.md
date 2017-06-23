@@ -6,7 +6,7 @@ All input and output data is serialized in JSON format. Errors are returned in [
 * [StatCounterTypeV1 enum](#enum1)
 * [StatCounterV1 class](#class1)
 * [StatCounterValueV1 class](#class2)
-* [StatCounterSetV1 class](#class2)
+* [StatCounterValueSetV1 class](#class2)
 * [POST /statistics/read_counters](#operation1)
 * [POST /statistics/increment_counter](#operation2)
 * [POST /statistics/read_one_counter](#operation3)
@@ -43,7 +43,7 @@ Contains counter value for specific period
 - day: number - (optional) - day of the counter interval
 - hour: number - (optional) - hour of the counter interval
 
-### <a name="class2"></a> StatCounterSetV1 class
+### <a name="class2"></a> StatCounterValueSetV1 class
 
 Set of counter values for range of time intervals
 
@@ -98,7 +98,7 @@ Reads counter by group and name within specific time interval
 - to_time: Date - end of the time range
 
 **Response body:**
-- StatCounterSetV1 object or error
+- StatCounterValueSetV1 object or error
 
 ### <a name="operation3"></a> 'POST', route '/statistics/read\_counters'
 
@@ -111,5 +111,5 @@ Reads multiple counters within specific time interval
 - to_time: Date - end of the time range
 
 **Response body:**
-- StatCounterSetV1[] object or error
+- StatCounterValueSetV1[] object or error
 

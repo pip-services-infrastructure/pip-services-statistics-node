@@ -10,6 +10,7 @@ const pip_services_commons_node_7 = require("pip-services-commons-node");
 const pip_services_commons_node_8 = require("pip-services-commons-node");
 const pip_services_commons_node_9 = require("pip-services-commons-node");
 const StatCounterV1Schema_1 = require("../data/version1/StatCounterV1Schema");
+const StatCounterIncrementV1Schema_1 = require("../data/version1/StatCounterIncrementV1Schema");
 class StatisticsCommandSet extends pip_services_commons_node_1.CommandSet {
     constructor(logic) {
         super();
@@ -18,6 +19,7 @@ class StatisticsCommandSet extends pip_services_commons_node_1.CommandSet {
         this.addCommand(this.makeGetGroupsCommand());
         this.addCommand(this.makeGetContersCommand());
         this.addCommand(this.makeIncrementCounterCommand());
+        this.addCommand(this.makeIncrementCountersCommand());
         this.addCommand(this.makeReadCountersCommand());
         this.addCommand(this.makeReadCountersByGroupCommand());
         this.addCommand(this.makeReadOneCounterCommand());
@@ -50,6 +52,15 @@ class StatisticsCommandSet extends pip_services_commons_node_1.CommandSet {
             let time = args.getAsNullableDateTime("time");
             let value = args.getAsDouble("value");
             this._logic.incrementCounter(correlationId, group, name, time, value, (err) => {
+                callback(err, null);
+            });
+        });
+    }
+    makeIncrementCountersCommand() {
+        return new pip_services_commons_node_2.Command("increment_counters", new pip_services_commons_node_5.ObjectSchema(true)
+            .withRequiredProperty('increments', new pip_services_commons_node_6.ArraySchema(new StatCounterIncrementV1Schema_1.StatCounterIncrementV1Schema())), (correlationId, args, callback) => {
+            let increments = args.getAsObject("increments");
+            this._logic.incrementCounters(correlationId, increments, (err) => {
                 callback(err, null);
             });
         });

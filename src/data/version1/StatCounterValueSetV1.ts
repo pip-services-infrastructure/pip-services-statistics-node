@@ -1,8 +1,8 @@
 import { StatCounterValueV1 } from './StatCounterValueV1';
 import { StatCounterTypeV1 } from './StatCounterTypeV1';
 
-export class StatCounterSetV1
-{
+export class StatCounterValueSetV1 {
+    
     public constructor(group: string, name: string, type: StatCounterTypeV1, values: StatCounterValueV1[]) {
         this.group = group;
         this.name = name;

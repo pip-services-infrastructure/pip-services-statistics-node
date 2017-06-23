@@ -53,7 +53,7 @@ class StatCounterValueV1
     public value: number;
 }
 
-class StatCounterSetV1
+class StatCounterValueSetV1
 {
     public group: string;
     public name: string;
@@ -72,13 +72,13 @@ interface IStatisticsV1 {
         time: Date, value: number, callback?: (err: any) => void): void;
 
     readOneCounter(correlationId: string, group: string, name: string, type: StatCounterTypeV1,
-        fromTime: Date, toTime: Date, callback: (err: any, value: StatCounterSetV1) => void): void;
+        fromTime: Date, toTime: Date, callback: (err: any, value: StatCounterValueSetV1) => void): void;
 
     readCountersByGroup(correlationId: string, group: string, type: StatCounterTypeV1,
-        fromTime: Date, toTime: Date, callback: (err: any, values: StatCounterSetV1[]) => void): void;
+        fromTime: Date, toTime: Date, callback: (err: any, values: StatCounterValueSetV1[]) => void): void;
 
     readCounters(correlationId: string, counters: StatCounterV1[], type: StatCounterTypeV1,
-        fromTime: Date, toTime: Date, callback: (err: any, values: StatCounterSetV1[]) => void): void;
+        fromTime: Date, toTime: Date, callback: (err: any, values: StatCounterValueSetV1[]) => void): void;
 }
 
 ```

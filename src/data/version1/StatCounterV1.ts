@@ -1,5 +1,5 @@
-export class StatCounterV1
-{
+export class StatCounterV1 {
+    
     public constructor(group: string, name: string) {
         this.group = group;
         this.name = name;

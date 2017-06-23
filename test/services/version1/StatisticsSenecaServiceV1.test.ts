@@ -10,7 +10,7 @@ import { SenecaInstance } from 'pip-services-net-node';
 import { DateTimeConverter } from 'pip-services-commons-node';
 
 import { StatCounterV1 } from '../../../src/data/version1/StatCounterV1';
-import { StatCounterSetV1 } from '../../../src/data/version1/StatCounterSetV1';
+import { StatCounterValueSetV1 } from '../../../src/data/version1/StatCounterValueSetV1';
 import { StatCounterTypeV1 } from '../../../src/data/version1/StatCounterTypeV1';
 import { StatisticsMemoryPersistence } from '../../../src/persistence/StatisticsMemoryPersistence';
 import { StatisticsController } from '../../../src/logic/StatisticsController';

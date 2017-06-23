@@ -12,13 +12,15 @@ import { PagingParams } from 'pip-services-commons-node';
 import { DataPage } from 'pip-services-commons-node';
 import { ICommandable } from 'pip-services-commons-node';
 import { CommandSet } from 'pip-services-commons-node';
+import { DateTimeConverter } from 'pip-services-commons-node';
 
 import { IFacetsClientV1 } from 'pip-clients-facets-node';
 
 import { StatCounterTypeV1 } from '../data/version1/StatCounterTypeV1';
 import { StatCounterV1 } from '../data/version1/StatCounterV1';
+import { StatCounterIncrementV1 } from '../data/version1/StatCounterIncrementV1';
 import { StatCounterValueV1 } from '../data/version1/StatCounterValueV1';
-import { StatCounterSetV1 } from '../data/version1/StatCounterSetV1';
+import { StatCounterValueSetV1 } from '../data/version1/StatCounterValueSetV1';
 import { IStatisticsPersistence } from '../persistence/IStatisticsPersistence';
 import { IStatisticsController } from './IStatisticsController';
 import { StatisticsCommandSet } from './StatisticsCommandSet';
@@ -101,8 +103,19 @@ export class StatisticsController implements IConfigurable, IReferenceable, ICom
         });
     }
 
+    public incrementCounters(correlationId: string, increments: StatCounterIncrementV1[],
+        callback?: (err: any) => void): void {
+    
+        async.each(increments, (increment, callback) => {
+            increment.time = DateTimeConverter.toDateTimeWithDefault(increment.time, new Date());
+
+            this.incrementCounter(correlationId, increment.group, increment.name,
+                increment.time, increment.value, callback);
+        }, callback);
+    }
+
     public readOneCounter(correlationId: string, group: string, name: string, type: StatCounterTypeV1,
-        fromTime: Date, toTime: Date, callback: (err: any, value: StatCounterSetV1) => void): void {
+        fromTime: Date, toTime: Date, callback: (err: any, value: StatCounterValueSetV1) => void): void {
         let filter: FilterParams = FilterParams.fromTuples(
             'group', group,
             'name', name,
@@ -116,7 +129,7 @@ export class StatisticsController implements IConfigurable, IReferenceable, ICom
                 return;
             }
 
-            let set = new StatCounterSetV1(group, name, type, []);
+            let set = new StatCounterValueSetV1(group, name, type, []);
             _.each(records, (x) => {
                 set.values.push(
                     new StatCounterValueV1(
@@ -134,7 +147,7 @@ export class StatisticsController implements IConfigurable, IReferenceable, ICom
     }
 
     public readCountersByGroup(correlationId: string, group: string, type: StatCounterTypeV1,
-        fromTime: Date, toTime: Date, callback: (err: any, values: StatCounterSetV1[]) => void): void {
+        fromTime: Date, toTime: Date, callback: (err: any, values: StatCounterValueSetV1[]) => void): void {
         let filter: FilterParams = FilterParams.fromTuples(
             'group', group,
             'type', type,
@@ -148,12 +161,12 @@ export class StatisticsController implements IConfigurable, IReferenceable, ICom
             }
 
             let sets: any = {};
-            let values: StatCounterSetV1[] = [];
+            let values: StatCounterValueSetV1[] = [];
 
             _.each(records, (x) => {
                 let set = sets[x.name];
                 if (set == null) {
-                    set = new StatCounterSetV1(x.group, x.name, type, []);
+                    set = new StatCounterValueSetV1(x.group, x.name, type, []);
                     sets[x.name] = set;
                     values.push(set);
                 }
@@ -174,8 +187,8 @@ export class StatisticsController implements IConfigurable, IReferenceable, ICom
     }
 
     public readCounters(correlationId: string, counters: StatCounterV1[], type: StatCounterTypeV1,
-        fromTime: Date, toTime: Date, callback: (err: any, values: StatCounterSetV1[]) => void): void {
-        let result: StatCounterSetV1[] = [];
+        fromTime: Date, toTime: Date, callback: (err: any, values: StatCounterValueSetV1[]) => void): void {
+        let result: StatCounterValueSetV1[] = [];
         async.each(
             counters, 
             (counter, callback) => {

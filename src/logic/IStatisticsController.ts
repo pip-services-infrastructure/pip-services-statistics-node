@@ -4,7 +4,8 @@ import { DataPage } from 'pip-services-commons-node';
 
 import { StatCounterTypeV1 } from '../data/version1/StatCounterTypeV1';
 import { StatCounterV1 } from '../data/version1/StatCounterV1';
-import { StatCounterSetV1 } from '../data/version1/StatCounterSetV1';
+import { StatCounterIncrementV1 } from '../data/version1/StatCounterIncrementV1';
+import { StatCounterValueSetV1 } from '../data/version1/StatCounterValueSetV1';
 
 export interface IStatisticsController {
     getGroups(correlationId: string, paging: PagingParams,
@@ -16,12 +17,15 @@ export interface IStatisticsController {
     incrementCounter(correlationId: string, group: string, name: string,
         time: Date, value: number, callback?: (err: any) => void): void;
 
+    incrementCounters(correlationId: string, increments: StatCounterIncrementV1[],
+        callback?: (err: any) => void): void;
+
     readOneCounter(correlationId: string, group: string, name: string, type: StatCounterTypeV1,
-        fromTime: Date, toTime: Date, callback: (err: any, value: StatCounterSetV1) => void): void;
+        fromTime: Date, toTime: Date, callback: (err: any, value: StatCounterValueSetV1) => void): void;
 
     readCountersByGroup(correlationId: string, group: string, type: StatCounterTypeV1,
-        fromTime: Date, toTime: Date, callback: (err: any, values: StatCounterSetV1[]) => void): void;
+        fromTime: Date, toTime: Date, callback: (err: any, values: StatCounterValueSetV1[]) => void): void;
 
     readCounters(correlationId: string, counters: StatCounterV1[], type: StatCounterTypeV1,
-        fromTime: Date, toTime: Date, callback: (err: any, values: StatCounterSetV1[]) => void): void;
+        fromTime: Date, toTime: Date, callback: (err: any, values: StatCounterValueSetV1[]) => void): void;
 }

@@ -34,7 +34,7 @@ seneca.act(
 * [StatCounterTypeV1 enum](#enum1)
 * [StatCounterV1 class](#class1)
 * [StatCounterValueV1 class](#class2)
-* [StatCounterSetV1 class](#class2)
+* [StatCounterValueSetV1 class](#class2)
 * [cmd: 'get_counters'](#operation1)
 * [cmd: 'increment_counter'](#operation2)
 * [cmd: 'read_one_counter'](#operation3)
@@ -71,7 +71,7 @@ Contains counter value for specific period
 - day: number - (optional) - day of the counter interval
 - hour: number - (optional) - hour of the counter interval
 
-### <a name="class2"></a> StatCounterSetV1 class
+### <a name="class2"></a> StatCounterValueSetV1 class
 
 Set of counter values for range of time intervals
 
@@ -128,7 +128,7 @@ Reads counter by group and name within specific time interval
 
 **Returns:**
 - err: Error - occured error or null for success
-- result: StatCounterSetV1 - set of retrieved counter values
+- result: StatCounterValueSetV1 - set of retrieved counter values
 
 ### <a name="operation4"></a> Cmd: 'read\_counters'
 
@@ -142,6 +142,6 @@ Reads multiple counters within specific time interval
 
 **Returns:**
 - err: Error - occured error or null for success
-- result: StatCounterSetV1[] - array of retrieved counter value sets
+- result: StatCounterValueSetV1[] - array of retrieved counter value sets
 
 
