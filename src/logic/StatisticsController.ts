@@ -91,6 +91,9 @@ export class StatisticsController implements IConfigurable, IReferenceable, ICom
 
     public incrementCounter(correlationId: string, group: string, name: string,
         time: Date, value: number, callback?: (err: any) => void): void {
+
+        time = DateTimeConverter.toDateTimeWithDefault(time, new Date());
+
         this._persistence.increment(correlationId, group, name, time, value, (err, added) => {
             // When facets client is defined then record facets
             if (err == null && this._facetsClient != null && added) {
@@ -107,8 +110,6 @@ export class StatisticsController implements IConfigurable, IReferenceable, ICom
         callback?: (err: any) => void): void {
     
         async.each(increments, (increment, callback) => {
-            increment.time = DateTimeConverter.toDateTimeWithDefault(increment.time, new Date());
-
             this.incrementCounter(correlationId, increment.group, increment.name,
                 increment.time, increment.value, callback);
         }, callback);

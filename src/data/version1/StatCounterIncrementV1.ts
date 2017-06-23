@@ -8,6 +8,6 @@ export class StatCounterIncrementV1 {
 
     public group: string;
     public name: string;
-    public time: Date;
+    public time?: Date;
     public value: number;
 }

@@ -62,6 +62,7 @@ class StatisticsController {
         });
     }
     incrementCounter(correlationId, group, name, time, value, callback) {
+        time = pip_services_commons_node_5.DateTimeConverter.toDateTimeWithDefault(time, new Date());
         this._persistence.increment(correlationId, group, name, time, value, (err, added) => {
             // When facets client is defined then record facets
             if (err == null && this._facetsClient != null && added) {
@@ -78,7 +79,6 @@ class StatisticsController {
     }
     incrementCounters(correlationId, increments, callback) {
         async.each(increments, (increment, callback) => {
-            increment.time = pip_services_commons_node_5.DateTimeConverter.toDateTimeWithDefault(increment.time, new Date());
             this.incrementCounter(correlationId, increment.group, increment.name, increment.time, increment.value, callback);
         }, callback);
     }

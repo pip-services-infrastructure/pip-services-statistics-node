@@ -6,7 +6,7 @@ export class StatCounterIncrementV1Schema extends ObjectSchema {
         super();
         this.withRequiredProperty('group', TypeCode.String);
         this.withRequiredProperty('name', TypeCode.String);
-        this.withRequiredProperty('time', null); //TypeCode.DateTime);
+        this.withOptionalProperty('time', null); //TypeCode.DateTime);
         this.withRequiredProperty('value', TypeCode.Float);
     }
 }
