@@ -51,7 +51,7 @@ suite('StatisticsController', ()=> {
             (callback) => {
                 controller.incrementCounter(
                     null,
-                    'test', 'value1', DateTimeConverter.toDateTime('1975-04-09T19:00:00.00Z'), 1,
+                    'test', 'value1', DateTimeConverter.toDateTime('1975-04-09T19:00:00.00Z'), 'UTC', 1,
                     (err) => {
                         assert.isNull(err);
 
@@ -68,6 +68,7 @@ suite('StatisticsController', ()=> {
                             group: 'test',
                             name: 'value1',
                             time: DateTimeConverter.toDateTime('1975-04-09T20:00:00.00Z'),
+                            timezone: 'UTC',
                             value: 2
                         }
                     ],
@@ -112,7 +113,7 @@ suite('StatisticsController', ()=> {
         // Check total counters
             (callback) => {
                 controller.readOneCounter(
-                    null, 'test', 'value1', StatCounterTypeV1.Total, null, null,
+                    null, 'test', 'value1', StatCounterTypeV1.Total, null, null, null,
                     (err, set) => {
                         assert.isNull(err);
 
@@ -129,7 +130,7 @@ suite('StatisticsController', ()=> {
         // Check total counters by group
             (callback) => {
                 controller.readCountersByGroup(
-                    null, 'test', StatCounterTypeV1.Total, null, null,
+                    null, 'test', StatCounterTypeV1.Total, null, null, null,
                     (err, sets) => {
                         assert.isNull(err);
 
@@ -154,6 +155,7 @@ suite('StatisticsController', ()=> {
                     StatCounterTypeV1.Hour,
                     DateTimeConverter.toDateTime('1975-04-09T19:00:00.00Z'),
                     DateTimeConverter.toDateTime('1975-04-09T19:00:00.00Z'),
+                    'UTC',                    
                     (err, sets) => {
                         assert.isNull(err);
 

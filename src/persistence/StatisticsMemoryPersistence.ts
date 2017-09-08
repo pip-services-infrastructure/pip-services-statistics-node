@@ -64,10 +64,11 @@ export class StatisticsMemoryPersistence extends IdentifiableMemoryPersistence<S
         let group = filter.getAsNullableString('group');
         let name = filter.getAsNullableString('name');
         let type = filter.getAsNullableInteger('type');
+        let timezone = filter.getAsNullableString('timezone');
         let fromTime = filter.getAsNullableDateTime('from_time');
-        let fromId = fromTime != null ? StatCounterKeyGenerator.makeCounterKey(group, name, type, fromTime) : null;
+        let fromId = fromTime != null ? StatCounterKeyGenerator.makeCounterKey(group, name, type, fromTime, timezone) : null;
         let toTime = filter.getAsNullableDateTime('to_time');
-        let toId = toTime != null ? StatCounterKeyGenerator.makeCounterKey(group, name, type, toTime) : null;
+        let toId = toTime != null ? StatCounterKeyGenerator.makeCounterKey(group, name, type, toTime, timezone) : null;
 
         return (item: StatCounterRecordV1) => {
             if (search != null && !this.matchSearch(item, search))
@@ -97,14 +98,16 @@ export class StatisticsMemoryPersistence extends IdentifiableMemoryPersistence<S
     }
 
     private incrementOne(correlationId: string, group: string, name: string, type: StatCounterTypeV1,
-        time: Date, value: number, callback?: (err: any, item: StatCounterRecordV1) => void): void {
-        let id = StatCounterKeyGenerator.makeCounterKey(group, name, type, time);
+        time: Date, timezone: string, value: number,
+        callback?: (err: any, item: StatCounterRecordV1) => void): void {
+        
+        let id = StatCounterKeyGenerator.makeCounterKey(group, name, type, time, timezone);
 
         let item = this._items.find((x) => { return x.id == id; });
         if (item != null) {
             item.value += value;
         } else {
-            item = new StatCounterRecordV1(group, name, type, time, value);
+            item = new StatCounterRecordV1(group, name, type, time, timezone, value);
             item.id = id;
             this._items.push(item);
         }
@@ -113,15 +116,17 @@ export class StatisticsMemoryPersistence extends IdentifiableMemoryPersistence<S
     }
 
     public increment(correlationId: string, group: string, name: string,
-        time: Date, value: number,  callback?: (err: any, added: boolean) => void): void {
-        let added = false;
-        this.incrementOne(correlationId, group, name, StatCounterTypeV1.Total, time, value, (err, data) => {
+        time: Date, timezone: string, value: number,
+        callback?: (err: any, added: boolean) => void): void {
+        
+            let added = false;
+        this.incrementOne(correlationId, group, name, StatCounterTypeV1.Total, time, timezone, value, (err, data) => {
             added = data.value == value;
         });
-        this.incrementOne(correlationId, group, name, StatCounterTypeV1.Year, time, value);
-        this.incrementOne(correlationId, group, name, StatCounterTypeV1.Month, time, value);
-        this.incrementOne(correlationId, group, name, StatCounterTypeV1.Day, time, value);
-        this.incrementOne(correlationId, group, name, StatCounterTypeV1.Hour, time, value);
+        this.incrementOne(correlationId, group, name, StatCounterTypeV1.Year, time, timezone, value);
+        this.incrementOne(correlationId, group, name, StatCounterTypeV1.Month, time, timezone, value);
+        this.incrementOne(correlationId, group, name, StatCounterTypeV1.Day, time, timezone, value);
+        this.incrementOne(correlationId, group, name, StatCounterTypeV1.Hour, time, timezone, value);
 
         this._logger.trace(correlationId, "Incremented %s.%s", group, name);
 

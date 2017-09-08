@@ -63,6 +63,7 @@ suite('StatisticsHttpServiceV1', ()=> {
                         group: 'test', 
                         name: 'value1', 
                         time: DateTimeConverter.toDateTime('1975-04-09T19:00:00.00Z'), 
+                        timezone: 'UTC',
                         value: 1
                     },
                     (err) => {
@@ -79,6 +80,7 @@ suite('StatisticsHttpServiceV1', ()=> {
                         group: 'test', 
                         name: 'value1', 
                         time: DateTimeConverter.toDateTime('1975-04-09T20:00:00.00Z'), 
+                        timezone: 'UTC',
                         value: 2
                     },
                     (err, req, res) => {
@@ -145,6 +147,7 @@ suite('StatisticsHttpServiceV1', ()=> {
                         type: StatCounterTypeV1.Hour,
                         from_time: DateTimeConverter.toDateTime('1975-04-09T19:00:00.00Z'),
                         to_time: DateTimeConverter.toDateTime('1975-04-09T19:00:00.00Z'),
+                        timezone: 'UTC'
                     },
                     (err, req, res, sets) => {
                         assert.isNull(err);

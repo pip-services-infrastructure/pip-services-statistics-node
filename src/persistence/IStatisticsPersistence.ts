@@ -19,5 +19,6 @@ export interface IStatisticsPersistence {
         callback: (err: any, list: StatCounterRecordV1[]) => void): void;
 
     increment(correlationId: string, group: string, name: string,
-        time: Date, value: number, callback?: (err: any, added: boolean) => void): void;
+        time: Date, timezone: string, value: number,
+        callback?: (err: any, added: boolean) => void): void;
 }

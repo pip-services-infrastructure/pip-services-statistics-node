@@ -79,13 +79,14 @@ export class StatisticsMongoDbPersistence
         if (type != null)
             criteria.push({ type: type });
 
+        let timezone = filter.getAsNullableString('timezone');
         let fromTime = filter.getAsNullableDateTime('from_time');
-        let fromId = fromTime != null ? StatCounterKeyGenerator.makeCounterKey(group, name, type, fromTime) : null;
+        let fromId = fromTime != null ? StatCounterKeyGenerator.makeCounterKey(group, name, type, fromTime, timezone) : null;
         if (fromId != null)
             criteria.push({ _id: { $gte: fromId } });
 
         let toTime = filter.getAsNullableDateTime('to_time');
-        let toId = toTime != null ? StatCounterKeyGenerator.makeCounterKey(group, name, type, toTime) : null;
+        let toId = toTime != null ? StatCounterKeyGenerator.makeCounterKey(group, name, type, toTime, timezone) : null;
         if (toId != null)
             criteria.push({ _id: { $lte: toId } });
 
@@ -101,9 +102,10 @@ export class StatisticsMongoDbPersistence
     }
 
     private incrementOne(correlationId: string, group: string, name: string, type: StatCounterTypeV1,
-        time: Date, value: number, callback?: (err: any, item: StatCounterRecordV1) => void): void {
-        let id = StatCounterKeyGenerator.makeCounterKey(group, name, type, time);
-        let record = new StatCounterRecordV1(group, name, type, time, value);
+        time: Date, timezone: string, value: number,
+        callback?: (err: any, item: StatCounterRecordV1) => void): void {
+        let id = StatCounterKeyGenerator.makeCounterKey(group, name, type, time, timezone);
+        let record = new StatCounterRecordV1(group, name, type, time, timezone, value);
 
         let filter = {
             _id: id
@@ -114,6 +116,7 @@ export class StatisticsMongoDbPersistence
             name: name,
             type: type
         };
+
         if (type != StatCounterTypeV1.Total) {
             oldData.year = record.year;
             if (type != StatCounterTypeV1.Year) {
@@ -148,12 +151,13 @@ export class StatisticsMongoDbPersistence
     }
 
     public increment(correlationId: string, group: string, name: string,
-        time: Date, value: number,  callback?: (err: any, added: boolean) => void): void {
+        time: Date, timezone: string, value: number,
+        callback?: (err: any, added: boolean) => void): void {
         let added = false;
         async.parallel([
             (callback) => {
                 this.incrementOne(
-                    correlationId, group, name, StatCounterTypeV1.Total, time, value,
+                    correlationId, group, name, StatCounterTypeV1.Total, time, timezone, value,
                     (err, data) => {
                         added = data != null ? data.value == value : false;
                         callback();
@@ -162,25 +166,25 @@ export class StatisticsMongoDbPersistence
             },
             (callback) => {
                 this.incrementOne(
-                    correlationId, group, name, StatCounterTypeV1.Year, time, value,
+                    correlationId, group, name, StatCounterTypeV1.Year, time, timezone, value,
                     callback
                 );
             },
             (callback) => {
                 this.incrementOne(
-                    correlationId, group, name, StatCounterTypeV1.Month, time, value,
+                    correlationId, group, name, StatCounterTypeV1.Month, time, timezone, value,
                     callback
                 );
             },
             (callback) => {
                 this.incrementOne(
-                    correlationId, group, name, StatCounterTypeV1.Day, time, value,
+                    correlationId, group, name, StatCounterTypeV1.Day, time, timezone, value,
                     callback
                 );
             },
             (callback) => {
                 this.incrementOne(
-                    correlationId, group, name, StatCounterTypeV1.Hour, time, value,
+                    correlationId, group, name, StatCounterTypeV1.Hour, time, timezone, value,
                     callback
                 );
             }

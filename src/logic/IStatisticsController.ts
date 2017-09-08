@@ -15,17 +15,20 @@ export interface IStatisticsController {
         callback: (err: any, page: DataPage<StatCounterV1>) => void): void;
     
     incrementCounter(correlationId: string, group: string, name: string,
-        time: Date, value: number, callback?: (err: any) => void): void;
+        time: Date, timezone: string, value: number, callback?: (err: any) => void): void;
 
     incrementCounters(correlationId: string, increments: StatCounterIncrementV1[],
         callback?: (err: any) => void): void;
 
     readOneCounter(correlationId: string, group: string, name: string, type: StatCounterTypeV1,
-        fromTime: Date, toTime: Date, callback: (err: any, value: StatCounterValueSetV1) => void): void;
+        fromTime: Date, toTime: Date, timezone: string,
+        callback: (err: any, value: StatCounterValueSetV1) => void): void;
 
     readCountersByGroup(correlationId: string, group: string, type: StatCounterTypeV1,
-        fromTime: Date, toTime: Date, callback: (err: any, values: StatCounterValueSetV1[]) => void): void;
+        fromTime: Date, toTime: Date, timezone: string,
+        callback: (err: any, values: StatCounterValueSetV1[]) => void): void;
 
     readCounters(correlationId: string, counters: StatCounterV1[], type: StatCounterTypeV1,
-        fromTime: Date, toTime: Date, callback: (err: any, values: StatCounterValueSetV1[]) => void): void;
+        fromTime: Date, toTime: Date, timezone: string,
+        callback: (err: any, values: StatCounterValueSetV1[]) => void): void;
 }

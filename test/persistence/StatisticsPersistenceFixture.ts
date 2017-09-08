@@ -23,7 +23,8 @@ export class StatisticsPersistenceFixture {
             (callback) => {
                 this._persistence.increment(
                     null,
-                    'test', 'value1', DateTimeConverter.toDateTime('1975-04-09T19:00:00.00Z'), 1,
+                    'test', 'value1',
+                    DateTimeConverter.toDateTime('1975-04-09T19:00:00.00Z'), 'UTC', 1,
                     (err) => {
                         assert.isNull(err);
 
@@ -35,7 +36,8 @@ export class StatisticsPersistenceFixture {
             (callback) => {
                 this._persistence.increment(
                     null,
-                    'test', 'value1', DateTimeConverter.toDateTime('1975-04-09T20:00:00.00Z'), 2,
+                    'test', 'value1',
+                    DateTimeConverter.toDateTime('1975-04-09T20:00:00.00Z'), 'UTC', 2,
                     (err) => {
                         assert.isNull(err);
 

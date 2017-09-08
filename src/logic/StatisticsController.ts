@@ -90,11 +90,12 @@ export class StatisticsController implements IConfigurable, IReferenceable, ICom
     }
 
     public incrementCounter(correlationId: string, group: string, name: string,
-        time: Date, value: number, callback?: (err: any) => void): void {
+        time: Date, timezone: string, value: number, callback?: (err: any) => void): void {
 
         time = DateTimeConverter.toDateTimeWithDefault(time, new Date());
+        timezone = timezone || 'UTC';
 
-        this._persistence.increment(correlationId, group, name, time, value, (err, added) => {
+        this._persistence.increment(correlationId, group, name, time, timezone, value, (err, added) => {
             // When facets client is defined then record facets
             if (err == null && this._facetsClient != null && added) {
                 this._facetsClient.addFacet(correlationId, this._facetsGroup, group, (err) => {
@@ -111,18 +112,20 @@ export class StatisticsController implements IConfigurable, IReferenceable, ICom
     
         async.each(increments, (increment, callback) => {
             this.incrementCounter(correlationId, increment.group, increment.name,
-                increment.time, increment.value, callback);
+                increment.time, increment.timezone, increment.value, callback);
         }, callback);
     }
 
     public readOneCounter(correlationId: string, group: string, name: string, type: StatCounterTypeV1,
-        fromTime: Date, toTime: Date, callback: (err: any, value: StatCounterValueSetV1) => void): void {
+        fromTime: Date, toTime: Date, timezone: string,
+        callback: (err: any, value: StatCounterValueSetV1) => void): void {
         let filter: FilterParams = FilterParams.fromTuples(
             'group', group,
             'name', name,
             'type', type,
             'from_time', fromTime,
-            'to_time', toTime
+            'to_time', toTime,
+            'timezone', timezone
         );
         this._persistence.getListByFilter(correlationId, filter, (err, records) => {
             if (err) {
@@ -148,12 +151,14 @@ export class StatisticsController implements IConfigurable, IReferenceable, ICom
     }
 
     public readCountersByGroup(correlationId: string, group: string, type: StatCounterTypeV1,
-        fromTime: Date, toTime: Date, callback: (err: any, values: StatCounterValueSetV1[]) => void): void {
+        fromTime: Date, toTime: Date, timezone: string,
+        callback: (err: any, values: StatCounterValueSetV1[]) => void): void {
         let filter: FilterParams = FilterParams.fromTuples(
             'group', group,
             'type', type,
             'from_time', fromTime,
-            'to_time', toTime
+            'to_time', toTime,
+            'timezone', timezone
         );
         this._persistence.getListByFilter(correlationId, filter, (err, records) => {
             if (err) {
@@ -188,13 +193,14 @@ export class StatisticsController implements IConfigurable, IReferenceable, ICom
     }
 
     public readCounters(correlationId: string, counters: StatCounterV1[], type: StatCounterTypeV1,
-        fromTime: Date, toTime: Date, callback: (err: any, values: StatCounterValueSetV1[]) => void): void {
+        fromTime: Date, toTime: Date, timezone: string,
+        callback: (err: any, values: StatCounterValueSetV1[]) => void): void {
         let result: StatCounterValueSetV1[] = [];
         async.each(
             counters, 
             (counter, callback) => {
                 return this.readOneCounter(
-                    correlationId, counter.group, counter.name, type, fromTime, toTime,
+                    correlationId, counter.group, counter.name, type, fromTime, toTime, timezone,
                     (err, set) => {
                         if (set) result.push(set);
                         callback(err);

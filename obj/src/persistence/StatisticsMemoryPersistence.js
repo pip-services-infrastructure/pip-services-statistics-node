@@ -50,10 +50,11 @@ class StatisticsMemoryPersistence extends pip_services_data_node_1.IdentifiableM
         let group = filter.getAsNullableString('group');
         let name = filter.getAsNullableString('name');
         let type = filter.getAsNullableInteger('type');
+        let timezone = filter.getAsNullableString('timezone');
         let fromTime = filter.getAsNullableDateTime('from_time');
-        let fromId = fromTime != null ? StatCounterKeyGenerator_1.StatCounterKeyGenerator.makeCounterKey(group, name, type, fromTime) : null;
+        let fromId = fromTime != null ? StatCounterKeyGenerator_1.StatCounterKeyGenerator.makeCounterKey(group, name, type, fromTime, timezone) : null;
         let toTime = filter.getAsNullableDateTime('to_time');
-        let toId = toTime != null ? StatCounterKeyGenerator_1.StatCounterKeyGenerator.makeCounterKey(group, name, type, toTime) : null;
+        let toId = toTime != null ? StatCounterKeyGenerator_1.StatCounterKeyGenerator.makeCounterKey(group, name, type, toTime, timezone) : null;
         return (item) => {
             if (search != null && !this.matchSearch(item, search))
                 return false;
@@ -76,29 +77,29 @@ class StatisticsMemoryPersistence extends pip_services_data_node_1.IdentifiableM
     getListByFilter(correlationId, filter, callback) {
         super.getListByFilter(correlationId, this.composeFilter(filter), null, null, callback);
     }
-    incrementOne(correlationId, group, name, type, time, value, callback) {
-        let id = StatCounterKeyGenerator_1.StatCounterKeyGenerator.makeCounterKey(group, name, type, time);
+    incrementOne(correlationId, group, name, type, time, timezone, value, callback) {
+        let id = StatCounterKeyGenerator_1.StatCounterKeyGenerator.makeCounterKey(group, name, type, time, timezone);
         let item = this._items.find((x) => { return x.id == id; });
         if (item != null) {
             item.value += value;
         }
         else {
-            item = new StatCounterRecordV1_1.StatCounterRecordV1(group, name, type, time, value);
+            item = new StatCounterRecordV1_1.StatCounterRecordV1(group, name, type, time, timezone, value);
             item.id = id;
             this._items.push(item);
         }
         if (callback)
             callback(null, item);
     }
-    increment(correlationId, group, name, time, value, callback) {
+    increment(correlationId, group, name, time, timezone, value, callback) {
         let added = false;
-        this.incrementOne(correlationId, group, name, StatCounterTypeV1_1.StatCounterTypeV1.Total, time, value, (err, data) => {
+        this.incrementOne(correlationId, group, name, StatCounterTypeV1_1.StatCounterTypeV1.Total, time, timezone, value, (err, data) => {
             added = data.value == value;
         });
-        this.incrementOne(correlationId, group, name, StatCounterTypeV1_1.StatCounterTypeV1.Year, time, value);
-        this.incrementOne(correlationId, group, name, StatCounterTypeV1_1.StatCounterTypeV1.Month, time, value);
-        this.incrementOne(correlationId, group, name, StatCounterTypeV1_1.StatCounterTypeV1.Day, time, value);
-        this.incrementOne(correlationId, group, name, StatCounterTypeV1_1.StatCounterTypeV1.Hour, time, value);
+        this.incrementOne(correlationId, group, name, StatCounterTypeV1_1.StatCounterTypeV1.Year, time, timezone, value);
+        this.incrementOne(correlationId, group, name, StatCounterTypeV1_1.StatCounterTypeV1.Month, time, timezone, value);
+        this.incrementOne(correlationId, group, name, StatCounterTypeV1_1.StatCounterTypeV1.Day, time, timezone, value);
+        this.incrementOne(correlationId, group, name, StatCounterTypeV1_1.StatCounterTypeV1.Hour, time, timezone, value);
         this._logger.trace(correlationId, "Incremented %s.%s", group, name);
         this.save(correlationId, (err) => {
             if (callback)

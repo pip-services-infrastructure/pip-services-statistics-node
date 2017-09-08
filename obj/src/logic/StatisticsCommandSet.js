@@ -45,13 +45,15 @@ class StatisticsCommandSet extends pip_services_commons_node_1.CommandSet {
             .withRequiredProperty('group', pip_services_commons_node_7.TypeCode.String)
             .withRequiredProperty('name', pip_services_commons_node_7.TypeCode.String)
             .withOptionalProperty('time', null) //TypeCode.DateTime)
+            .withOptionalProperty('timezone', pip_services_commons_node_7.TypeCode.String)
             .withRequiredProperty('value', null), //TypeCode.Double)
         (correlationId, args, callback) => {
             let group = args.getAsNullableString("group");
             let name = args.getAsNullableString("name");
             let time = args.getAsNullableDateTime("time");
+            let timezone = args.getAsNullableString("timezone");
             let value = args.getAsDouble("value");
-            this._logic.incrementCounter(correlationId, group, name, time, value, (err) => {
+            this._logic.incrementCounter(correlationId, group, name, time, timezone, value, (err) => {
                 callback(err, null);
             });
         });
@@ -71,14 +73,15 @@ class StatisticsCommandSet extends pip_services_commons_node_1.CommandSet {
             .withRequiredProperty('name', pip_services_commons_node_7.TypeCode.String)
             .withRequiredProperty('type', pip_services_commons_node_7.TypeCode.Long)
             .withOptionalProperty('from_time', null) //TypeCode.DateTime)
-            .withOptionalProperty('to_time', null), //TypeCode.DateTime)
-        (correlationId, args, callback) => {
+            .withOptionalProperty('to_time', null) //TypeCode.DateTime)
+            .withOptionalProperty('timezone', pip_services_commons_node_7.TypeCode.String), (correlationId, args, callback) => {
             let group = args.getAsNullableString("group");
             let name = args.getAsNullableString("name");
             let type = args.getAsNullableInteger("type");
             let fromTime = args.getAsNullableDateTime("from_time");
             let toTime = args.getAsNullableDateTime("to_time");
-            this._logic.readOneCounter(correlationId, group, name, type, fromTime, toTime, callback);
+            let timezone = args.getAsNullableString("timezone");
+            this._logic.readOneCounter(correlationId, group, name, type, fromTime, toTime, timezone, callback);
         });
     }
     makeReadCountersByGroupCommand() {
@@ -86,13 +89,14 @@ class StatisticsCommandSet extends pip_services_commons_node_1.CommandSet {
             .withRequiredProperty('group', pip_services_commons_node_7.TypeCode.String)
             .withRequiredProperty('type', pip_services_commons_node_7.TypeCode.Long)
             .withOptionalProperty('from_time', null) //TypeCode.DateTime)
-            .withOptionalProperty('to_time', null), //TypeCode.DateTime)
-        (correlationId, args, callback) => {
+            .withOptionalProperty('to_time', null) //TypeCode.DateTime)
+            .withOptionalProperty('timezone', pip_services_commons_node_7.TypeCode.String), (correlationId, args, callback) => {
             let group = args.getAsNullableString("group");
             let type = args.getAsNullableInteger("type");
             let fromTime = args.getAsNullableDateTime("from_time");
             let toTime = args.getAsNullableDateTime("to_time");
-            this._logic.readCountersByGroup(correlationId, group, type, fromTime, toTime, callback);
+            let timezone = args.getAsNullableString("timezone");
+            this._logic.readCountersByGroup(correlationId, group, type, fromTime, toTime, timezone, callback);
         });
     }
     makeReadCountersCommand() {
@@ -100,13 +104,14 @@ class StatisticsCommandSet extends pip_services_commons_node_1.CommandSet {
             .withRequiredProperty('counters', new pip_services_commons_node_6.ArraySchema(new StatCounterV1Schema_1.StatCounterV1Schema()))
             .withRequiredProperty('type', pip_services_commons_node_7.TypeCode.Long)
             .withOptionalProperty('from_time', null) //TypeCode.DateTime)
-            .withOptionalProperty('to_time', null), //TypeCode.DateTime)
-        (correlationId, args, callback) => {
+            .withOptionalProperty('to_time', null) //TypeCode.DateTime)
+            .withOptionalProperty('timezone', pip_services_commons_node_7.TypeCode.String), (correlationId, args, callback) => {
             let counters = args.get("counters");
             let type = args.getAsNullableInteger("type");
             let fromTime = args.getAsNullableDateTime("from_time");
             let toTime = args.getAsNullableDateTime("to_time");
-            this._logic.readCounters(correlationId, counters, type, fromTime, toTime, callback);
+            let timezone = args.getAsNullableString("timezone");
+            this._logic.readCounters(correlationId, counters, type, fromTime, toTime, timezone, callback);
         });
     }
 }

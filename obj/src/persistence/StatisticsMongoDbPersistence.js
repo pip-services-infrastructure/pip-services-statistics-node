@@ -60,12 +60,13 @@ class StatisticsMongoDbPersistence extends pip_services_data_node_1.Identifiable
         let type = filter.getAsNullableInteger('type');
         if (type != null)
             criteria.push({ type: type });
+        let timezone = filter.getAsNullableString('timezone');
         let fromTime = filter.getAsNullableDateTime('from_time');
-        let fromId = fromTime != null ? StatCounterKeyGenerator_1.StatCounterKeyGenerator.makeCounterKey(group, name, type, fromTime) : null;
+        let fromId = fromTime != null ? StatCounterKeyGenerator_1.StatCounterKeyGenerator.makeCounterKey(group, name, type, fromTime, timezone) : null;
         if (fromId != null)
             criteria.push({ _id: { $gte: fromId } });
         let toTime = filter.getAsNullableDateTime('to_time');
-        let toId = toTime != null ? StatCounterKeyGenerator_1.StatCounterKeyGenerator.makeCounterKey(group, name, type, toTime) : null;
+        let toId = toTime != null ? StatCounterKeyGenerator_1.StatCounterKeyGenerator.makeCounterKey(group, name, type, toTime, timezone) : null;
         if (toId != null)
             criteria.push({ _id: { $lte: toId } });
         return criteria.length > 0 ? { $and: criteria } : {};
@@ -76,9 +77,9 @@ class StatisticsMongoDbPersistence extends pip_services_data_node_1.Identifiable
     getListByFilter(correlationId, filter, callback) {
         super.getListByFilter(correlationId, this.composeFilter(filter), null, null, callback);
     }
-    incrementOne(correlationId, group, name, type, time, value, callback) {
-        let id = StatCounterKeyGenerator_1.StatCounterKeyGenerator.makeCounterKey(group, name, type, time);
-        let record = new StatCounterRecordV1_1.StatCounterRecordV1(group, name, type, time, value);
+    incrementOne(correlationId, group, name, type, time, timezone, value, callback) {
+        let id = StatCounterKeyGenerator_1.StatCounterKeyGenerator.makeCounterKey(group, name, type, time, timezone);
+        let record = new StatCounterRecordV1_1.StatCounterRecordV1(group, name, type, time, timezone, value);
         let filter = {
             _id: id
         };
@@ -116,26 +117,26 @@ class StatisticsMongoDbPersistence extends pip_services_data_node_1.Identifiable
             }
         });
     }
-    increment(correlationId, group, name, time, value, callback) {
+    increment(correlationId, group, name, time, timezone, value, callback) {
         let added = false;
         async.parallel([
             (callback) => {
-                this.incrementOne(correlationId, group, name, StatCounterTypeV1_1.StatCounterTypeV1.Total, time, value, (err, data) => {
+                this.incrementOne(correlationId, group, name, StatCounterTypeV1_1.StatCounterTypeV1.Total, time, timezone, value, (err, data) => {
                     added = data != null ? data.value == value : false;
                     callback();
                 });
             },
             (callback) => {
-                this.incrementOne(correlationId, group, name, StatCounterTypeV1_1.StatCounterTypeV1.Year, time, value, callback);
+                this.incrementOne(correlationId, group, name, StatCounterTypeV1_1.StatCounterTypeV1.Year, time, timezone, value, callback);
             },
             (callback) => {
-                this.incrementOne(correlationId, group, name, StatCounterTypeV1_1.StatCounterTypeV1.Month, time, value, callback);
+                this.incrementOne(correlationId, group, name, StatCounterTypeV1_1.StatCounterTypeV1.Month, time, timezone, value, callback);
             },
             (callback) => {
-                this.incrementOne(correlationId, group, name, StatCounterTypeV1_1.StatCounterTypeV1.Day, time, value, callback);
+                this.incrementOne(correlationId, group, name, StatCounterTypeV1_1.StatCounterTypeV1.Day, time, timezone, value, callback);
             },
             (callback) => {
-                this.incrementOne(correlationId, group, name, StatCounterTypeV1_1.StatCounterTypeV1.Hour, time, value, callback);
+                this.incrementOne(correlationId, group, name, StatCounterTypeV1_1.StatCounterTypeV1.Hour, time, timezone, value, callback);
             }
         ], (err) => {
             if (err == null)

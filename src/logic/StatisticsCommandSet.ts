@@ -68,13 +68,15 @@ export class StatisticsCommandSet extends CommandSet {
 				.withRequiredProperty('group', TypeCode.String)
 				.withRequiredProperty('name', TypeCode.String)
 				.withOptionalProperty('time', null) //TypeCode.DateTime)
+				.withOptionalProperty('timezone', TypeCode.String)
 				.withRequiredProperty('value', null), //TypeCode.Double)
 			(correlationId: string, args: Parameters, callback: (err: any, result: any) => void) => {
 				let group = args.getAsNullableString("group");
 				let name = args.getAsNullableString("name");
 				let time = args.getAsNullableDateTime("time");
+				let timezone = args.getAsNullableString("timezone");
 				let value = args.getAsDouble("value");
-				this._logic.incrementCounter(correlationId, group, name, time, value, (err) => {
+				this._logic.incrementCounter(correlationId, group, name, time, timezone, value, (err) => {
 					callback(err, null);
 				});
 			}
@@ -103,14 +105,16 @@ export class StatisticsCommandSet extends CommandSet {
 				.withRequiredProperty('name', TypeCode.String)
 				.withRequiredProperty('type', TypeCode.Long)
 				.withOptionalProperty('from_time', null) //TypeCode.DateTime)
-				.withOptionalProperty('to_time', null), //TypeCode.DateTime)
-			(correlationId: string, args: Parameters, callback: (err: any, result: any) => void) => {
+				.withOptionalProperty('to_time', null) //TypeCode.DateTime)
+				.withOptionalProperty('timezone', TypeCode.String),
+				(correlationId: string, args: Parameters, callback: (err: any, result: any) => void) => {
 				let group = args.getAsNullableString("group");
 				let name = args.getAsNullableString("name");
 				let type = args.getAsNullableInteger("type");
 				let fromTime = args.getAsNullableDateTime("from_time");
 				let toTime = args.getAsNullableDateTime("to_time");
-				this._logic.readOneCounter(correlationId, group, name, type, fromTime, toTime, callback);
+				let timezone = args.getAsNullableString("timezone");
+				this._logic.readOneCounter(correlationId, group, name, type, fromTime, toTime, timezone, callback);
 			}
 		);
 	}
@@ -122,13 +126,15 @@ export class StatisticsCommandSet extends CommandSet {
 				.withRequiredProperty('group', TypeCode.String)
 				.withRequiredProperty('type', TypeCode.Long)
 				.withOptionalProperty('from_time', null) //TypeCode.DateTime)
-				.withOptionalProperty('to_time', null), //TypeCode.DateTime)
+				.withOptionalProperty('to_time', null) //TypeCode.DateTime)
+				.withOptionalProperty('timezone', TypeCode.String),
 			(correlationId: string, args: Parameters, callback: (err: any, result: any) => void) => {
 				let group = args.getAsNullableString("group");
 				let type = args.getAsNullableInteger("type");
 				let fromTime = args.getAsNullableDateTime("from_time");
 				let toTime = args.getAsNullableDateTime("to_time");
-				this._logic.readCountersByGroup(correlationId, group, type, fromTime, toTime, callback);
+				let timezone = args.getAsNullableString("timezone");
+				this._logic.readCountersByGroup(correlationId, group, type, fromTime, toTime, timezone, callback);
 			}
 		);
 	}
@@ -140,13 +146,15 @@ export class StatisticsCommandSet extends CommandSet {
 				.withRequiredProperty('counters', new ArraySchema(new StatCounterV1Schema()))
 				.withRequiredProperty('type', TypeCode.Long)
 				.withOptionalProperty('from_time', null) //TypeCode.DateTime)
-				.withOptionalProperty('to_time', null), //TypeCode.DateTime)
+				.withOptionalProperty('to_time', null) //TypeCode.DateTime)
+				.withOptionalProperty('timezone', TypeCode.String),
 			(correlationId: string, args: Parameters, callback: (err: any, result: any) => void) => {
 				let counters: StatCounterV1[] = args.get("counters");
 				let type = args.getAsNullableInteger("type");
 				let fromTime = args.getAsNullableDateTime("from_time");
 				let toTime = args.getAsNullableDateTime("to_time");
-				this._logic.readCounters(correlationId, counters, type, fromTime, toTime, callback);
+				let timezone = args.getAsNullableString("timezone");
+				this._logic.readCounters(correlationId, counters, type, fromTime, toTime, timezone, callback);
 			}
 		);
 	}

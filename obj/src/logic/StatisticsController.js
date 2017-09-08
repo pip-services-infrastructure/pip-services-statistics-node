@@ -61,9 +61,10 @@ class StatisticsController {
             }
         });
     }
-    incrementCounter(correlationId, group, name, time, value, callback) {
+    incrementCounter(correlationId, group, name, time, timezone, value, callback) {
         time = pip_services_commons_node_5.DateTimeConverter.toDateTimeWithDefault(time, new Date());
-        this._persistence.increment(correlationId, group, name, time, value, (err, added) => {
+        timezone = timezone || 'UTC';
+        this._persistence.increment(correlationId, group, name, time, timezone, value, (err, added) => {
             // When facets client is defined then record facets
             if (err == null && this._facetsClient != null && added) {
                 this._facetsClient.addFacet(correlationId, this._facetsGroup, group, (err) => {
@@ -79,11 +80,11 @@ class StatisticsController {
     }
     incrementCounters(correlationId, increments, callback) {
         async.each(increments, (increment, callback) => {
-            this.incrementCounter(correlationId, increment.group, increment.name, increment.time, increment.value, callback);
+            this.incrementCounter(correlationId, increment.group, increment.name, increment.time, increment.timezone, increment.value, callback);
         }, callback);
     }
-    readOneCounter(correlationId, group, name, type, fromTime, toTime, callback) {
-        let filter = pip_services_commons_node_3.FilterParams.fromTuples('group', group, 'name', name, 'type', type, 'from_time', fromTime, 'to_time', toTime);
+    readOneCounter(correlationId, group, name, type, fromTime, toTime, timezone, callback) {
+        let filter = pip_services_commons_node_3.FilterParams.fromTuples('group', group, 'name', name, 'type', type, 'from_time', fromTime, 'to_time', toTime, 'timezone', timezone);
         this._persistence.getListByFilter(correlationId, filter, (err, records) => {
             if (err) {
                 if (callback)
@@ -98,8 +99,8 @@ class StatisticsController {
                 callback(null, set);
         });
     }
-    readCountersByGroup(correlationId, group, type, fromTime, toTime, callback) {
-        let filter = pip_services_commons_node_3.FilterParams.fromTuples('group', group, 'type', type, 'from_time', fromTime, 'to_time', toTime);
+    readCountersByGroup(correlationId, group, type, fromTime, toTime, timezone, callback) {
+        let filter = pip_services_commons_node_3.FilterParams.fromTuples('group', group, 'type', type, 'from_time', fromTime, 'to_time', toTime, 'timezone', timezone);
         this._persistence.getListByFilter(correlationId, filter, (err, records) => {
             if (err) {
                 if (callback)
@@ -121,10 +122,10 @@ class StatisticsController {
                 callback(null, values);
         });
     }
-    readCounters(correlationId, counters, type, fromTime, toTime, callback) {
+    readCounters(correlationId, counters, type, fromTime, toTime, timezone, callback) {
         let result = [];
         async.each(counters, (counter, callback) => {
-            return this.readOneCounter(correlationId, counter.group, counter.name, type, fromTime, toTime, (err, set) => {
+            return this.readOneCounter(correlationId, counter.group, counter.name, type, fromTime, toTime, timezone, (err, set) => {
                 if (set)
                     result.push(set);
                 callback(err);
