@@ -9,9 +9,9 @@ export class StatCounterValueV1 {
         this.value = value;
     }
 
-    public year: number;
-    public month: number;
-    public day: number;
-    public hour: number;
+    public year?: number;
+    public month?: number;
+    public day?: number;
+    public hour?: number;
     public value: number;
 }

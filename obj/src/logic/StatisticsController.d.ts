@@ -16,7 +16,6 @@ export declare class StatisticsController implements IConfigurable, IReferenceab
     private static _defaultConfig;
     private _dependencyResolver;
     private _persistence;
-    private _facetsClient;
     private _commandSet;
     private _facetsGroup;
     configure(config: ConfigParams): void;

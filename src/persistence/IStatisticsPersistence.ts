@@ -7,6 +7,7 @@ import { IWriter } from 'pip-services-data-node';
 import { StatCounterV1 } from '../data/version1/StatCounterV1';
 import { StatCounterTypeV1 } from '../data/version1/StatCounterTypeV1';
 import { StatCounterRecordV1 } from '../data/version1/StatCounterRecordV1';
+import { StatCounterIncrementV1 } from '../data/version1/StatCounterIncrementV1';
 
 export interface IStatisticsPersistence {
     getGroups(correlationId: string, paging: PagingParams,
@@ -18,7 +19,10 @@ export interface IStatisticsPersistence {
     getListByFilter(correlationId: string, filter: FilterParams,
         callback: (err: any, list: StatCounterRecordV1[]) => void): void;
 
-    increment(correlationId: string, group: string, name: string,
+    incrementOne(correlationId: string, group: string, name: string,
         time: Date, timezone: string, value: number,
-        callback?: (err: any, added: boolean) => void): void;
+        callback?: (err: any) => void): void;
+
+    incrementBatch(correlationId: string, increments: StatCounterIncrementV1[],
+        callback?: (err: any) => void): void;
 }

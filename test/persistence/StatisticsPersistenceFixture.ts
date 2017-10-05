@@ -21,7 +21,7 @@ export class StatisticsPersistenceFixture {
         async.series([
         // Increment counter
             (callback) => {
-                this._persistence.increment(
+                this._persistence.incrementOne(
                     null,
                     'test', 'value1',
                     DateTimeConverter.toDateTime('1975-04-09T19:00:00.00Z'), 'UTC', 1,
@@ -34,10 +34,17 @@ export class StatisticsPersistenceFixture {
             },
         // Increment the same counter again
             (callback) => {
-                this._persistence.increment(
+                this._persistence.incrementBatch(
                     null,
-                    'test', 'value1',
-                    DateTimeConverter.toDateTime('1975-04-09T20:00:00.00Z'), 'UTC', 2,
+                    [
+                        {
+                            group: 'test',
+                            name: 'value1',
+                            time: DateTimeConverter.toDateTime('1975-04-09T20:00:00.00Z'),
+                            timezone: 'UTC',
+                            value: 2
+                        }
+                    ],
                     (err) => {
                         assert.isNull(err);
 

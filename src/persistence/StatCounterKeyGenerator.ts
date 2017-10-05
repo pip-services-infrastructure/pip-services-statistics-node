@@ -4,22 +4,18 @@ import { StatCounterTypeV1 } from '../data/version1/StatCounterTypeV1';
 
 export class StatCounterKeyGenerator {
 
-    public static makeCounterTime(type: StatCounterTypeV1,
-        time: Date, timezone: string): number {
+    private static makeCounterTime(type: StatCounterTypeV1, momentTime: any): number {
         let result = 0;
 
-        let tz = timezone || 'UTC';
-        let t = moment(time).tz(tz);
-
         if (type != StatCounterTypeV1.Total) {
-            result = t.year();
+            result = momentTime.year();
 
             if (type != StatCounterTypeV1.Year) {
-                result = result * 100 + t.month() + 1;
+                result = result * 100 + momentTime.month() + 1;
                 if (type != StatCounterTypeV1.Month) {
-                    result = result * 100 + t.date();
+                    result = result * 100 + momentTime.date();
                     if (type != StatCounterTypeV1.Day) {
-                        result = result * 100 + t.hour();
+                        result = result * 100 + momentTime.hour();
                     }
                 }
             }
@@ -28,12 +24,21 @@ export class StatCounterKeyGenerator {
         return result;
     }
 
-    public static makeCounterKey(group: string, name: string, type: StatCounterTypeV1,
-        time: Date, timezone: string): string {
+    public static makeCounterKeyFromMoment(group: string, name: string, type: StatCounterTypeV1,
+        momentTime: any): string {
         let key = '' + group + '_' + name;
         if (type != StatCounterTypeV1.Total) 
-            key = key + '_' + StatCounterKeyGenerator.makeCounterTime(type, time, timezone);
+            key = key + '_' + StatCounterKeyGenerator.makeCounterTime(type, momentTime);
         return key;
     }
 
+    public static makeCounterKeyFromTime(group: string, name: string, type: StatCounterTypeV1,
+        time: Date, timezone: string): string {
+
+        let tz = timezone || 'UTC';
+        let momentTime =  moment(time).tz(tz);
+            
+        return StatCounterKeyGenerator.makeCounterKeyFromMoment(group, name, type, momentTime);
+    }
+    
 }

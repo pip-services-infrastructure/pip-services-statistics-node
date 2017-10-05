@@ -19,12 +19,10 @@ class StatisticsController {
     }
     configure(config) {
         this._dependencyResolver.configure(config);
-        this._facetsGroup = config.getAsStringWithDefault('options.facets_group', this._facetsGroup);
     }
     setReferences(references) {
         this._dependencyResolver.setReferences(references);
         this._persistence = this._dependencyResolver.getOneRequired('persistence');
-        this._facetsClient = this._dependencyResolver.getOneOptional('facets');
     }
     getCommandSet() {
         if (this._commandSet == null)
@@ -32,22 +30,7 @@ class StatisticsController {
         return this._commandSet;
     }
     getGroups(correlationId, paging, callback) {
-        // When facets client is defined then use it to retrieve groups
-        if (this._facetsClient != null) {
-            this._facetsClient.getFacetsByGroup(correlationId, this._facetsGroup, paging, (err, page) => {
-                if (page != null) {
-                    let data = _.map(page.data, (facet) => facet.group);
-                    let result = new pip_services_commons_node_4.DataPage(data, page.total);
-                    callback(err, result);
-                }
-                else {
-                    callback(err, null);
-                }
-            });
-        }
-        else {
-            this._persistence.getGroups(correlationId, paging, callback);
-        }
+        this._persistence.getGroups(correlationId, paging, callback);
     }
     getCounters(correlationId, filter, paging, callback) {
         filter = filter || new pip_services_commons_node_3.FilterParams();
@@ -64,24 +47,28 @@ class StatisticsController {
     incrementCounter(correlationId, group, name, time, timezone, value, callback) {
         time = pip_services_commons_node_5.DateTimeConverter.toDateTimeWithDefault(time, new Date());
         timezone = timezone || 'UTC';
-        this._persistence.increment(correlationId, group, name, time, timezone, value, (err, added) => {
-            // When facets client is defined then record facets
-            if (err == null && this._facetsClient != null && added) {
-                this._facetsClient.addFacet(correlationId, this._facetsGroup, group, (err) => {
-                    if (callback)
-                        callback(err);
-                });
-            }
-            else {
-                if (callback)
-                    callback(err);
-            }
-        });
+        this._persistence.incrementOne(correlationId, group, name, time, timezone, value, callback);
     }
     incrementCounters(correlationId, increments, callback) {
-        async.each(increments, (increment, callback) => {
-            this.incrementCounter(correlationId, increment.group, increment.name, increment.time, increment.timezone, increment.value, callback);
-        }, callback);
+        let tempIncrements = [];
+        for (let increment of increments) {
+            // Fix increments
+            increment.time = pip_services_commons_node_5.DateTimeConverter.toDateTimeWithDefault(increment.time, new Date());
+            let roundedToHours = Math.trunc(increment.time.getTime() / 3600000) * 3600000;
+            increment.time = new Date(roundedToHours);
+            increment.timezone = increment.timezone || 'UTC';
+            // Find similar increment
+            let tempIncrement = _.find(tempIncrements, (inc) => {
+                return inc.group == increment.group
+                    && inc.name == increment.name
+                    && inc.time.getTime() == increment.time.getTime();
+            });
+            if (tempIncrement != null)
+                tempIncrement.value += increment.value;
+            else
+                tempIncrements.push(increment);
+        }
+        this._persistence.incrementBatch(correlationId, tempIncrements, callback);
     }
     readOneCounter(correlationId, group, name, type, fromTime, toTime, timezone, callback) {
         let filter = pip_services_commons_node_3.FilterParams.fromTuples('group', group, 'name', name, 'type', type, 'from_time', fromTime, 'to_time', toTime, 'timezone', timezone);
@@ -135,6 +122,6 @@ class StatisticsController {
         });
     }
 }
-StatisticsController._defaultConfig = pip_services_commons_node_1.ConfigParams.fromTuples('dependencies.persistence', 'pip-services-statistics:persistence:*:*:1.0', 'dependencies.facets', 'pip-clients-facets:client:*:*:1.0', 'options.facets_group', 'statistics');
+StatisticsController._defaultConfig = pip_services_commons_node_1.ConfigParams.fromTuples('dependencies.persistence', 'pip-services-statistics:persistence:*:*:1.0', 'options.facets_group', 'statistics');
 exports.StatisticsController = StatisticsController;
 //# sourceMappingURL=StatisticsController.js.map

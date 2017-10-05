@@ -5,7 +5,7 @@ let Mixed = mongoose_1.Schema.Types.Mixed;
 exports.StatRecordsMongoDbSchema = function (collection) {
     collection = collection || 'statistics';
     let schema = new mongoose_1.Schema({
-        _id: { type: String, unique: true },
+        _id: { type: String },
         group: { type: String, required: true, index: true },
         name: { type: String, required: true },
         type: { type: Number, required: true },

@@ -6,7 +6,7 @@ export let StatRecordsMongoDbSchema = function(collection?: string) {
 
     let schema = new Schema(
         {
-            _id: { type: String, unique: true },
+            _id: { type: String },
             group: { type: String, required: true, index: true },
             name: { type: String, required: true },
             type: { type: Number, required: true },

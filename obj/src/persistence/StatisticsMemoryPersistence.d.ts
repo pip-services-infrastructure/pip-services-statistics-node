@@ -3,6 +3,7 @@ import { PagingParams } from 'pip-services-commons-node';
 import { DataPage } from 'pip-services-commons-node';
 import { IdentifiableMemoryPersistence } from 'pip-services-data-node';
 import { StatCounterRecordV1 } from '../data/version1/StatCounterRecordV1';
+import { StatCounterIncrementV1 } from '../data/version1/StatCounterIncrementV1';
 import { IStatisticsPersistence } from './IStatisticsPersistence';
 export declare class StatisticsMemoryPersistence extends IdentifiableMemoryPersistence<StatCounterRecordV1, string> implements IStatisticsPersistence {
     constructor();
@@ -12,6 +13,7 @@ export declare class StatisticsMemoryPersistence extends IdentifiableMemoryPersi
     private composeFilter(filter);
     getPageByFilter(correlationId: string, filter: FilterParams, paging: PagingParams, callback: (err: any, page: DataPage<StatCounterRecordV1>) => void): void;
     getListByFilter(correlationId: string, filter: FilterParams, callback: (err: any, list: StatCounterRecordV1[]) => void): void;
-    private incrementOne(correlationId, group, name, type, time, timezone, value, callback?);
-    increment(correlationId: string, group: string, name: string, time: Date, timezone: string, value: number, callback?: (err: any, added: boolean) => void): void;
+    private incrementPartial(correlationId, group, name, type, momentTime, value, callback?);
+    incrementOne(correlationId: string, group: string, name: string, time: Date, timezone: string, value: number, callback?: (err: any) => void): void;
+    incrementBatch(correlationId: string, increments: StatCounterIncrementV1[], callback?: (err: any) => void): void;
 }

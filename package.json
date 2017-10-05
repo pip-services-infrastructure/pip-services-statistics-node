@@ -38,11 +38,10 @@
     },
     "dependencies": {
         "moment-timezone": "^0.5.13",
-        "pip-clients-facets-node": "git+ssh://git@github.com:pip-services-infrastructure/pip-clients-facets-node.git",
         "pip-services-aws-node": "^1.0.0",
-        "pip-services-commons-node": "^2.0.0",
+        "pip-services-commons-node": "^2.7.0",
         "pip-services-container-node": "^2.0.0",
-        "pip-services-data-node": "^2.0.0",
+        "pip-services-data-node": "^2.5.0",
         "pip-services-net-node": "^2.0.0"
     },
     "devDependencies": {
@@ -57,6 +56,7 @@
         "restify": "^4.3.0",
         "chai": "*",
         "matcha": "*",
-        "mocha": "*"
+        "mocha": "*",
+        "pip-benchmark-node": "git+ssh://git@github.com:pip-benchmark/pip-benchmark-node.git"
     }
 }

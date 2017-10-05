@@ -1,5 +1,6 @@
 let _ = require('lodash');
 let async = require('async');
+let moment = require('moment-timezone');
 
 import { FilterParams } from 'pip-services-commons-node';
 import { PagingParams } from 'pip-services-commons-node';
@@ -8,6 +9,7 @@ import { IdentifiableMongoDbPersistence } from 'pip-services-data-node';
 
 import { StatCounterTypeV1 } from '../data/version1/StatCounterTypeV1';
 import { StatCounterRecordV1 } from '../data/version1/StatCounterRecordV1';
+import { StatCounterIncrementV1 } from '../data/version1/StatCounterIncrementV1';
 import { IStatisticsPersistence } from './IStatisticsPersistence';
 import { StatRecordsMongoDbSchema } from './StatRecordsMongoDbSchema';
 import { StatCounterKeyGenerator } from './StatCounterKeyGenerator';
@@ -81,12 +83,12 @@ export class StatisticsMongoDbPersistence
 
         let timezone = filter.getAsNullableString('timezone');
         let fromTime = filter.getAsNullableDateTime('from_time');
-        let fromId = fromTime != null ? StatCounterKeyGenerator.makeCounterKey(group, name, type, fromTime, timezone) : null;
+        let fromId = fromTime != null ? StatCounterKeyGenerator.makeCounterKeyFromTime(group, name, type, fromTime, timezone) : null;
         if (fromId != null)
             criteria.push({ _id: { $gte: fromId } });
 
         let toTime = filter.getAsNullableDateTime('to_time');
-        let toId = toTime != null ? StatCounterKeyGenerator.makeCounterKey(group, name, type, toTime, timezone) : null;
+        let toId = toTime != null ? StatCounterKeyGenerator.makeCounterKeyFromTime(group, name, type, toTime, timezone) : null;
         if (toId != null)
             criteria.push({ _id: { $lte: toId } });
 
@@ -101,97 +103,92 @@ export class StatisticsMongoDbPersistence
         super.getListByFilter(correlationId, this.composeFilter(filter), null, null, callback);
     }
 
-    private incrementOne(correlationId: string, group: string, name: string, type: StatCounterTypeV1,
-        time: Date, timezone: string, value: number,
-        callback?: (err: any, item: StatCounterRecordV1) => void): void {
-        let id = StatCounterKeyGenerator.makeCounterKey(group, name, type, time, timezone);
-        let record = new StatCounterRecordV1(group, name, type, time, timezone, value);
+    private addPartialIncrement(batch: any, group: string, name: string, type: StatCounterTypeV1,
+        momentTime: any, value: number) {
+        
+        let id = StatCounterKeyGenerator.makeCounterKeyFromMoment(group, name, type, momentTime);
 
-        let filter = {
-            _id: id
-        };
-
-        let oldData: any = {
+        let data: any = {
             group: group,
             name: name,
             type: type
         };
-
+        
         if (type != StatCounterTypeV1.Total) {
-            oldData.year = record.year;
+            data.year = momentTime.year();
             if (type != StatCounterTypeV1.Year) {
-                oldData.month = record.month;
+                data.month = momentTime.month();
                 if (type != StatCounterTypeV1.Month) {
-                    oldData.day = record.day;
+                    data.day = momentTime.day();
                     if (type != StatCounterTypeV1.Day) {
-                        oldData.hour = record.hour;
+                        data.hour = momentTime.hour();
                     }
                 }
             }
         }
 
-        let data = {
-            $set: oldData,
-            $inc: {
-                value: value
-            }
-        }
+        batch
+            .find({
+                _id: id
+            })
+            .upsert()
+            .updateOne({
+                $set: data,
+                $inc: {
+                    value: value
+                }
+            });
+    }
 
-        let options = {
-            new: true,
-            upsert: true
-        };
-        
-        this._model.findOneAndUpdate(filter, data, options, (err, newItem) => {
-            if (callback) {
-                newItem = this.convertToPublic(newItem);
-                callback(err, newItem);
-            }
+    private addOneIncrement(batch: any, group: string, name: string,
+        time: Date, timezone: string, value: number) {
+
+        let tz = timezone || 'UTC';
+        let momentTime =  moment(time).tz(tz);
+
+        this.addPartialIncrement(batch, group, name, StatCounterTypeV1.Total, momentTime, value);
+        this.addPartialIncrement(batch, group, name, StatCounterTypeV1.Year, momentTime, value);
+        this.addPartialIncrement(batch, group, name, StatCounterTypeV1.Month, momentTime, value);
+        this.addPartialIncrement(batch, group, name, StatCounterTypeV1.Day, momentTime, value);
+        this.addPartialIncrement(batch, group, name, StatCounterTypeV1.Hour, momentTime, value);
+    }
+    
+    public incrementOne(correlationId: string, group: string, name: string,
+        time: Date, timezone: string, value: number,
+        callback?: (err: any, added: boolean) => void): void {
+
+        let batch = this._model.collection.initializeUnorderedBulkOp();
+        this.addOneIncrement(batch, group, name, time, timezone, value);
+
+        batch.execute((err) => {
+            if (err == null)
+                this._logger.trace(correlationId, "Incremented %s.%s", group, name);
+         
+            if (callback) callback(null, err == null);
         });
     }
 
-    public increment(correlationId: string, group: string, name: string,
-        time: Date, timezone: string, value: number,
-        callback?: (err: any, added: boolean) => void): void {
-        let added = false;
-        async.parallel([
-            (callback) => {
-                this.incrementOne(
-                    correlationId, group, name, StatCounterTypeV1.Total, time, timezone, value,
-                    (err, data) => {
-                        added = data != null ? data.value == value : false;
-                        callback();
-                    }
-                );
-            },
-            (callback) => {
-                this.incrementOne(
-                    correlationId, group, name, StatCounterTypeV1.Year, time, timezone, value,
-                    callback
-                );
-            },
-            (callback) => {
-                this.incrementOne(
-                    correlationId, group, name, StatCounterTypeV1.Month, time, timezone, value,
-                    callback
-                );
-            },
-            (callback) => {
-                this.incrementOne(
-                    correlationId, group, name, StatCounterTypeV1.Day, time, timezone, value,
-                    callback
-                );
-            },
-            (callback) => {
-                this.incrementOne(
-                    correlationId, group, name, StatCounterTypeV1.Hour, time, timezone, value,
-                    callback
-                );
-            }
-        ], (err) => {
+    public incrementBatch(correlationId: string, increments: StatCounterIncrementV1[],
+        callback?: (err: any) => void): void {
+
+        if (increments == null || increments.length == 0) {
+            if (callback) callback(null);
+            return;
+        }
+
+        let batch = this._model.collection.initializeUnorderedBulkOp();
+
+        for (let increment of increments) {
+            this.addOneIncrement(batch,
+                increment.group, increment.name, increment.time,
+                increment.timezone, increment.value);
+        }
+
+        batch.execute((err) => {
             if (err == null)
-               this._logger.trace(correlationId, "Incremented %s.%s", group, name);
-            if (callback) callback(err, added)
+                this._logger.trace(correlationId, "Incremented %d counters", increments.length);
+            
+            if (callback) callback(null);
         });
     }
 }
