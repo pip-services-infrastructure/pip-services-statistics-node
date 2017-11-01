@@ -95,9 +95,9 @@ class StatisticsMemoryPersistence extends pip_services_data_node_1.IdentifiableM
             if (type != StatCounterTypeV1_1.StatCounterTypeV1.Total) {
                 item.year = momentTime.year();
                 if (type != StatCounterTypeV1_1.StatCounterTypeV1.Year) {
-                    item.month = momentTime.month();
+                    item.month = momentTime.month() + 1;
                     if (type != StatCounterTypeV1_1.StatCounterTypeV1.Month) {
-                        item.day = momentTime.day();
+                        item.day = momentTime.date();
                         if (type != StatCounterTypeV1_1.StatCounterTypeV1.Day) {
                             item.hour = momentTime.hour();
                         }

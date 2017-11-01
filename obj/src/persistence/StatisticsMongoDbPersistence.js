@@ -87,9 +87,9 @@ class StatisticsMongoDbPersistence extends pip_services_data_node_1.Identifiable
         if (type != StatCounterTypeV1_1.StatCounterTypeV1.Total) {
             data.year = momentTime.year();
             if (type != StatCounterTypeV1_1.StatCounterTypeV1.Year) {
-                data.month = momentTime.month();
+                data.month = momentTime.month() + 1;
                 if (type != StatCounterTypeV1_1.StatCounterTypeV1.Month) {
-                    data.day = momentTime.day();
+                    data.day = momentTime.date();
                     if (type != StatCounterTypeV1_1.StatCounterTypeV1.Day) {
                         data.hour = momentTime.hour();
                     }
