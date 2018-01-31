@@ -13,6 +13,9 @@ class StatCounterKeyGenerator {
                     result = result * 100 + momentTime.date();
                     if (type != StatCounterTypeV1_1.StatCounterTypeV1.Day) {
                         result = result * 100 + momentTime.hour();
+                        // Account for 1 hour ahead
+                        if (momentTime.min() > 0 || momentTime.sec() > 0)
+                            result += 1;
                     }
                 }
             }

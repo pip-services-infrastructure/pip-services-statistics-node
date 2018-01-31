@@ -85,7 +85,7 @@ export class StatisticsController implements IConfigurable, IReferenceable, ICom
         for (let increment of increments) {
             // Fix increments
             increment.time = DateTimeConverter.toDateTimeWithDefault(increment.time, new Date());
-            let roundedToHours = Math.trunc(increment.time.getTime() / 3600000) * 3600000;
+            let roundedToHours = Math.trunc((increment.time.getTime() + 3599999) / 3600000) * 3600000;
             increment.time = new Date(roundedToHours);
             increment.timezone = increment.timezone || 'UTC';
 
