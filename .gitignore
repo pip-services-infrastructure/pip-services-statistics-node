@@ -1,6 +1,6 @@
 /node_modules
 /npm-debug.log
 /.idea
-/data/dashboards.test.json
-/data/dashboards.json
+/data/statistics.test.json
+/data/statistics.json
 /obj/test
