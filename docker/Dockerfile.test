@@ -1,5 +1,15 @@
 FROM pipdevs/node:8.4.0
 
+# Install git and ssh
+RUN apk update && apk add git && apk add openssh
+
+# Copy local ssh keys
+COPY files/id_rsa /root/.ssh/
+
+# Setup ssh access to github repositories
+RUN chmod 600 /root/.ssh/id_rsa* \
+    && ssh-keyscan github.com >> ~/.ssh/known_hosts
+
 # set working directory
 WORKDIR /app
 
