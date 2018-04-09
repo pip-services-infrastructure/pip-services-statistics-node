@@ -6,11 +6,11 @@ let moment = require('moment-timezone');
 const pip_services_commons_node_1 = require("pip-services-commons-node");
 const pip_services_commons_node_2 = require("pip-services-commons-node");
 const pip_services_commons_node_3 = require("pip-services-commons-node");
-const pip_services_data_node_1 = require("pip-services-data-node");
+const pip_services_oss_node_1 = require("pip-services-oss-node");
 const StatCounterTypeV1_1 = require("../data/version1/StatCounterTypeV1");
 const StatRecordsMongoDbSchema_1 = require("./StatRecordsMongoDbSchema");
 const StatCounterKeyGenerator_1 = require("./StatCounterKeyGenerator");
-class StatisticsMongoDbPersistence extends pip_services_data_node_1.IdentifiableMongoDbPersistence {
+class StatisticsMongoDbPersistence extends pip_services_oss_node_1.IdentifiableMongoDbPersistence {
     constructor() {
         super('statistics', StatRecordsMongoDbSchema_1.StatRecordsMongoDbSchema());
         this._maxPageSize = 1000;

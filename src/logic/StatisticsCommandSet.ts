@@ -16,6 +16,7 @@ import { StatCounterIncrementV1Schema } from '../data/version1/StatCounterIncrem
 import { StatCounterV1 } from '../data/version1/StatCounterV1';
 import { StatCounterValueSetV1 } from '../data/version1/StatCounterValueSetV1';
 import { IStatisticsController } from './IStatisticsController';
+import { StatCounterTypeV1 } from '..';
 
 export class StatisticsCommandSet extends CommandSet {
     private _logic: IStatisticsController;
@@ -110,7 +111,7 @@ export class StatisticsCommandSet extends CommandSet {
 				(correlationId: string, args: Parameters, callback: (err: any, result: any) => void) => {
 				let group = args.getAsNullableString("group");
 				let name = args.getAsNullableString("name");
-				let type = args.getAsNullableInteger("type");
+				let type = args.getAsIntegerWithDefault("type", StatCounterTypeV1.Total);
 				let fromTime = args.getAsNullableDateTime("from_time");
 				let toTime = args.getAsNullableDateTime("to_time");
 				let timezone = args.getAsNullableString("timezone");
@@ -130,7 +131,7 @@ export class StatisticsCommandSet extends CommandSet {
 				.withOptionalProperty('timezone', TypeCode.String),
 			(correlationId: string, args: Parameters, callback: (err: any, result: any) => void) => {
 				let group = args.getAsNullableString("group");
-				let type = args.getAsNullableInteger("type");
+				let type = args.getAsIntegerWithDefault("type", StatCounterTypeV1.Total);
 				let fromTime = args.getAsNullableDateTime("from_time");
 				let toTime = args.getAsNullableDateTime("to_time");
 				let timezone = args.getAsNullableString("timezone");
@@ -150,7 +151,7 @@ export class StatisticsCommandSet extends CommandSet {
 				.withOptionalProperty('timezone', TypeCode.String),
 			(correlationId: string, args: Parameters, callback: (err: any, result: any) => void) => {
 				let counters: StatCounterV1[] = args.get("counters");
-				let type = args.getAsNullableInteger("type");
+				let type = args.getAsIntegerWithDefault("type", StatCounterTypeV1.Total);
 				let fromTime = args.getAsNullableDateTime("from_time");
 				let toTime = args.getAsNullableDateTime("to_time");
 				let timezone = args.getAsNullableString("timezone");

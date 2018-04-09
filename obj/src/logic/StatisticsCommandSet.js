@@ -11,6 +11,7 @@ const pip_services_commons_node_8 = require("pip-services-commons-node");
 const pip_services_commons_node_9 = require("pip-services-commons-node");
 const StatCounterV1Schema_1 = require("../data/version1/StatCounterV1Schema");
 const StatCounterIncrementV1Schema_1 = require("../data/version1/StatCounterIncrementV1Schema");
+const __1 = require("..");
 class StatisticsCommandSet extends pip_services_commons_node_1.CommandSet {
     constructor(logic) {
         super();
@@ -77,7 +78,7 @@ class StatisticsCommandSet extends pip_services_commons_node_1.CommandSet {
             .withOptionalProperty('timezone', pip_services_commons_node_7.TypeCode.String), (correlationId, args, callback) => {
             let group = args.getAsNullableString("group");
             let name = args.getAsNullableString("name");
-            let type = args.getAsNullableInteger("type");
+            let type = args.getAsIntegerWithDefault("type", __1.StatCounterTypeV1.Total);
             let fromTime = args.getAsNullableDateTime("from_time");
             let toTime = args.getAsNullableDateTime("to_time");
             let timezone = args.getAsNullableString("timezone");
@@ -92,7 +93,7 @@ class StatisticsCommandSet extends pip_services_commons_node_1.CommandSet {
             .withOptionalProperty('to_time', null) //TypeCode.DateTime)
             .withOptionalProperty('timezone', pip_services_commons_node_7.TypeCode.String), (correlationId, args, callback) => {
             let group = args.getAsNullableString("group");
-            let type = args.getAsNullableInteger("type");
+            let type = args.getAsIntegerWithDefault("type", __1.StatCounterTypeV1.Total);
             let fromTime = args.getAsNullableDateTime("from_time");
             let toTime = args.getAsNullableDateTime("to_time");
             let timezone = args.getAsNullableString("timezone");
@@ -107,7 +108,7 @@ class StatisticsCommandSet extends pip_services_commons_node_1.CommandSet {
             .withOptionalProperty('to_time', null) //TypeCode.DateTime)
             .withOptionalProperty('timezone', pip_services_commons_node_7.TypeCode.String), (correlationId, args, callback) => {
             let counters = args.get("counters");
-            let type = args.getAsNullableInteger("type");
+            let type = args.getAsIntegerWithDefault("type", __1.StatCounterTypeV1.Total);
             let fromTime = args.getAsNullableDateTime("from_time");
             let toTime = args.getAsNullableDateTime("to_time");
             let timezone = args.getAsNullableString("timezone");
