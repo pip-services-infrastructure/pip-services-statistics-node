@@ -57,23 +57,3 @@
     host: {{ELASTICSEARCH_LOGGING_SERVICE_HOST}}
     port: {{ELASTICSEARCH_LOGGING_SERVICE_PORT}}
 {{/if}}
-
-# Prometheus performance counters
-- descriptor: "pip-services:counters:prometheus:default:1.0"
-{{#if PUSHGATEWAY_METRICS_ENABLED}}
-  connection:
-    protocol: http
-    host: {{PUSHGATEWAY_METRICS_SERVICE_HOST}}
-    port: {{PUSHGATEWAY_METRICS_SERVICE_PORT}}
-{{/if}}
-
-# Heartbeat service
-- descriptor: "pip-services:heartbeat-service:http:default:1.0"
-  route: heartbeat
-
-# Status service
-- descriptor: "pip-services:status-service:http:default:1.0"
-  route: status
-
-# Prometheus metrics service
-- descriptor: "pip-services:metrics-service:prometheus:default:1.0"
