@@ -4,3 +4,4 @@
 /data/statistics.test.json
 /data/statistics.json
 /obj/test
+/docker/id_rsa*
