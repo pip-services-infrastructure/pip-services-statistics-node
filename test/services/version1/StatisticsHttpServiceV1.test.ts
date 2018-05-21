@@ -58,7 +58,7 @@ suite('StatisticsHttpServiceV1', ()=> {
         async.series([
         // Increment counter
             (callback) => {
-                rest.post('/statistics/increment_counter',
+                rest.post('/v1/statistics/increment_counter',
                     {
                         group: 'test', 
                         name: 'value1', 
@@ -75,7 +75,7 @@ suite('StatisticsHttpServiceV1', ()=> {
             },
         // Increment the same counter again
             (callback) => {
-                rest.post('/statistics/increment_counter',
+                rest.post('/v1/statistics/increment_counter',
                     {
                         group: 'test', 
                         name: 'value1', 
@@ -92,7 +92,7 @@ suite('StatisticsHttpServiceV1', ()=> {
             },
         // Check all counters
             (callback) => {
-                rest.post('/statistics/get_counters',
+                rest.post('/v1/statistics/get_counters',
                     { },
                     (err, req, res, page) => {
                         assert.isNull(err);
@@ -106,7 +106,7 @@ suite('StatisticsHttpServiceV1', ()=> {
             },
         // Check all groups
             (callback) => {
-                rest.post('/statistics/get_groups',
+                rest.post('/v1/statistics/get_groups',
                     { },
                     (err, req, res, page) => {
                         assert.isNull(err);
@@ -120,7 +120,7 @@ suite('StatisticsHttpServiceV1', ()=> {
             },
         // Check total counters
             (callback) => {
-                rest.post('/statistics/read_one_counter',
+                rest.post('/v1/statistics/read_one_counter',
                     {
                         group: 'test', 
                         name: 'value1', 
@@ -141,7 +141,7 @@ suite('StatisticsHttpServiceV1', ()=> {
             },
         // Check monthly counters
             (callback) => {
-                rest.post('/statistics/read_counters',
+                rest.post('/v1/statistics/read_counters',
                     {
                         counters: [ new StatCounterV1('test', 'value1') ], 
                         type: StatCounterTypeV1.Hour,
