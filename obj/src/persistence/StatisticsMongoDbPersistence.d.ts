@@ -1,7 +1,7 @@
 import { FilterParams } from 'pip-services-commons-node';
 import { PagingParams } from 'pip-services-commons-node';
 import { DataPage } from 'pip-services-commons-node';
-import { IdentifiableMongoDbPersistence } from 'pip-services-oss-node';
+import { IdentifiableMongoDbPersistence } from 'pip-services-mongodb-node';
 import { StatCounterRecordV1 } from '../data/version1/StatCounterRecordV1';
 import { StatCounterIncrementV1 } from '../data/version1/StatCounterIncrementV1';
 import { IStatisticsPersistence } from './IStatisticsPersistence';

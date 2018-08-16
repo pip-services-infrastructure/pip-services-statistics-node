@@ -5,7 +5,7 @@ let assert = require('chai').assert;
 import { Descriptor } from 'pip-services-commons-node';
 import { ConfigParams } from 'pip-services-commons-node';
 import { References } from 'pip-services-commons-node';
-import { ConsoleLogger } from 'pip-services-commons-node';
+import { ConsoleLogger } from 'pip-services-components-node';
 import { DateTimeConverter } from 'pip-services-commons-node';
 
 import { StatCounterV1 } from '../../src/data/version1/StatCounterV1';
@@ -21,7 +21,7 @@ suite('StatisticsLambdaFunction', ()=> {
 
     suiteSetup((done) => {
         let config = ConfigParams.fromTuples(
-            'logger.descriptor', 'pip-services-commons:logger:console:default:1.0',
+            'logger.descriptor', 'pip-services:logger:console:default:1.0',
             'persistence.descriptor', 'pip-services-statistics:persistence:memory:default:1.0',
             'controller.descriptor', 'pip-services-statistics:controller:default:default:1.0'
         );
