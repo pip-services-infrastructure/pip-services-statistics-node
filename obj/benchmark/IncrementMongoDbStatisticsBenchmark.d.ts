@@ -8,6 +8,6 @@ export declare class IncrementMongoDbStatisticsBenchmark extends Benchmark {
     constructor();
     setUp(callback: (err: any) => void): void;
     tearDown(callback: (err: any) => void): void;
-    private getRandomCounter;
+    private getRandomCounter();
     execute(callback: (err: any) => void): void;
 }
