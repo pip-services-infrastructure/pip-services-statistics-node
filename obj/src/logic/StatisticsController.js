@@ -2,11 +2,11 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 let _ = require('lodash');
 let async = require('async');
-const pip_services_commons_node_1 = require("pip-services-commons-node");
-const pip_services_commons_node_2 = require("pip-services-commons-node");
-const pip_services_commons_node_3 = require("pip-services-commons-node");
-const pip_services_commons_node_4 = require("pip-services-commons-node");
-const pip_services_commons_node_5 = require("pip-services-commons-node");
+const pip_services3_commons_node_1 = require("pip-services3-commons-node");
+const pip_services3_commons_node_2 = require("pip-services3-commons-node");
+const pip_services3_commons_node_3 = require("pip-services3-commons-node");
+const pip_services3_commons_node_4 = require("pip-services3-commons-node");
+const pip_services3_commons_node_5 = require("pip-services3-commons-node");
 const StatCounterTypeV1_1 = require("../data/version1/StatCounterTypeV1");
 const StatCounterV1_1 = require("../data/version1/StatCounterV1");
 const StatCounterValueV1_1 = require("../data/version1/StatCounterValueV1");
@@ -14,7 +14,7 @@ const StatCounterValueSetV1_1 = require("../data/version1/StatCounterValueSetV1"
 const StatisticsCommandSet_1 = require("./StatisticsCommandSet");
 class StatisticsController {
     constructor() {
-        this._dependencyResolver = new pip_services_commons_node_2.DependencyResolver(StatisticsController._defaultConfig);
+        this._dependencyResolver = new pip_services3_commons_node_2.DependencyResolver(StatisticsController._defaultConfig);
         this._facetsGroup = 'statistics';
     }
     configure(config) {
@@ -33,19 +33,19 @@ class StatisticsController {
         this._persistence.getGroups(correlationId, paging, callback);
     }
     getCounters(correlationId, filter, paging, callback) {
-        filter = filter || new pip_services_commons_node_3.FilterParams();
+        filter = filter || new pip_services3_commons_node_3.FilterParams();
         filter.setAsObject('type', StatCounterTypeV1_1.StatCounterTypeV1.Total);
         this._persistence.getPageByFilter(correlationId, filter, paging, (err, page) => {
             if (err)
                 callback(err, null);
             else {
                 let counters = _.map(page.data, (x) => new StatCounterV1_1.StatCounterV1(x.group, x.name));
-                callback(null, new pip_services_commons_node_4.DataPage(counters, page.total));
+                callback(null, new pip_services3_commons_node_4.DataPage(counters, page.total));
             }
         });
     }
     incrementCounter(correlationId, group, name, time, timezone, value, callback) {
-        time = pip_services_commons_node_5.DateTimeConverter.toDateTimeWithDefault(time, new Date());
+        time = pip_services3_commons_node_5.DateTimeConverter.toDateTimeWithDefault(time, new Date());
         timezone = timezone || 'UTC';
         this._persistence.incrementOne(correlationId, group, name, time, timezone, value, callback);
     }
@@ -53,7 +53,7 @@ class StatisticsController {
         let tempIncrements = [];
         for (let increment of increments) {
             // Fix increments
-            increment.time = pip_services_commons_node_5.DateTimeConverter.toDateTimeWithDefault(increment.time, new Date());
+            increment.time = pip_services3_commons_node_5.DateTimeConverter.toDateTimeWithDefault(increment.time, new Date());
             let roundedToHours = Math.trunc((increment.time.getTime() + 3599999) / 3600000) * 3600000;
             increment.time = new Date(roundedToHours);
             increment.timezone = increment.timezone || 'UTC';
@@ -71,7 +71,7 @@ class StatisticsController {
         this._persistence.incrementBatch(correlationId, tempIncrements, callback);
     }
     readOneCounter(correlationId, group, name, type, fromTime, toTime, timezone, callback) {
-        let filter = pip_services_commons_node_3.FilterParams.fromTuples('group', group, 'name', name, 'type', type, 'from_time', fromTime, 'to_time', toTime, 'timezone', timezone);
+        let filter = pip_services3_commons_node_3.FilterParams.fromTuples('group', group, 'name', name, 'type', type, 'from_time', fromTime, 'to_time', toTime, 'timezone', timezone);
         this._persistence.getListByFilter(correlationId, filter, (err, records) => {
             if (err) {
                 if (callback)
@@ -87,7 +87,7 @@ class StatisticsController {
         });
     }
     readCountersByGroup(correlationId, group, type, fromTime, toTime, timezone, callback) {
-        let filter = pip_services_commons_node_3.FilterParams.fromTuples('group', group, 'type', type, 'from_time', fromTime, 'to_time', toTime, 'timezone', timezone);
+        let filter = pip_services3_commons_node_3.FilterParams.fromTuples('group', group, 'type', type, 'from_time', fromTime, 'to_time', toTime, 'timezone', timezone);
         this._persistence.getListByFilter(correlationId, filter, (err, records) => {
             if (err) {
                 if (callback)
@@ -122,6 +122,6 @@ class StatisticsController {
         });
     }
 }
-StatisticsController._defaultConfig = pip_services_commons_node_1.ConfigParams.fromTuples('dependencies.persistence', 'pip-services-statistics:persistence:*:*:1.0', 'options.facets_group', 'statistics');
+StatisticsController._defaultConfig = pip_services3_commons_node_1.ConfigParams.fromTuples('dependencies.persistence', 'pip-services-statistics:persistence:*:*:1.0', 'options.facets_group', 'statistics');
 exports.StatisticsController = StatisticsController;
 //# sourceMappingURL=StatisticsController.js.map

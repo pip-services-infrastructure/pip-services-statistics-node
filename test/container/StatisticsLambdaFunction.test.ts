@@ -2,11 +2,11 @@ let _ = require('lodash');
 let async = require('async');
 let assert = require('chai').assert;
 
-import { Descriptor } from 'pip-services-commons-node';
-import { ConfigParams } from 'pip-services-commons-node';
-import { References } from 'pip-services-commons-node';
-import { ConsoleLogger } from 'pip-services-components-node';
-import { DateTimeConverter } from 'pip-services-commons-node';
+import { Descriptor } from 'pip-services3-commons-node';
+import { ConfigParams } from 'pip-services3-commons-node';
+import { References } from 'pip-services3-commons-node';
+import { ConsoleLogger } from 'pip-services3-components-node';
+import { DateTimeConverter } from 'pip-services3-commons-node';
 
 import { StatCounterV1 } from '../../src/data/version1/StatCounterV1';
 import { StatCounterValueSetV1 } from '../../src/data/version1/StatCounterValueSetV1';

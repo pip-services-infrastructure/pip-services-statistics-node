@@ -1,4 +1,4 @@
-import { IStringIdentifiable } from 'pip-services-commons-node';
+import { IStringIdentifiable } from 'pip-services3-commons-node';
 import { StatCounterTypeV1 } from './StatCounterTypeV1';
 export declare class StatCounterRecordV1 implements IStringIdentifiable {
     id: string;

@@ -1,9 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const pip_benchmark_node_1 = require("pip-benchmark-node");
-const pip_services_commons_node_1 = require("pip-services-commons-node");
-const pip_services_commons_node_2 = require("pip-services-commons-node");
-const pip_services_commons_node_3 = require("pip-services-commons-node");
+const pip_services3_commons_node_1 = require("pip-services3-commons-node");
+const pip_services3_commons_node_2 = require("pip-services3-commons-node");
+const pip_services3_commons_node_3 = require("pip-services3-commons-node");
 const StatisticsMongoDbPersistence_1 = require("../src/persistence/StatisticsMongoDbPersistence");
 const StatisticsController_1 = require("../src/logic/StatisticsController");
 class IncrementMongoDbStatisticsBenchmark extends pip_benchmark_node_1.Benchmark {
@@ -19,12 +19,12 @@ class IncrementMongoDbStatisticsBenchmark extends pip_benchmark_node_1.Benchmark
         let mongoPort = this.context.parameters.MongoPort.getAsInteger();
         let mongoDb = this.context.parameters.MongoDb.getAsString();
         this._persistence = new StatisticsMongoDbPersistence_1.StatisticsMongoDbPersistence();
-        this._persistence.configure(pip_services_commons_node_1.ConfigParams.fromTuples('connection.uri', mongoUri, 'connection.host', mongoHost, 'connection.port', mongoPort, 'connection.database', mongoDb));
+        this._persistence.configure(pip_services3_commons_node_1.ConfigParams.fromTuples('connection.uri', mongoUri, 'connection.host', mongoHost, 'connection.port', mongoPort, 'connection.database', mongoDb));
         this._controller = new StatisticsController_1.StatisticsController();
         // this._controller.configure(ConfigParams.fromTuples(
         //     'options.interval', 5 // Set interval to 5 mins
         // ));
-        let references = pip_services_commons_node_3.References.fromTuples(new pip_services_commons_node_2.Descriptor('pip-services-statistics', 'persistence', 'mongodb', 'default', '1.0'), this._persistence, new pip_services_commons_node_2.Descriptor('pip-services-statistics', 'controller', 'default', 'default', '1.0'), this._controller);
+        let references = pip_services3_commons_node_3.References.fromTuples(new pip_services3_commons_node_2.Descriptor('pip-services-statistics', 'persistence', 'mongodb', 'default', '1.0'), this._persistence, new pip_services3_commons_node_2.Descriptor('pip-services-statistics', 'controller', 'default', 'default', '1.0'), this._controller);
         this._controller.setReferences(references);
         this._persistence.open(null, (err) => {
             if (err == null)

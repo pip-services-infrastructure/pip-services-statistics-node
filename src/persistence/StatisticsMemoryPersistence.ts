@@ -2,10 +2,10 @@ let _ = require('lodash');
 let async = require('async');
 let moment = require('moment-timezone');
 
-import { FilterParams } from 'pip-services-commons-node';
-import { PagingParams } from 'pip-services-commons-node';
-import { DataPage } from 'pip-services-commons-node';
-import { IdentifiableMemoryPersistence } from 'pip-services-data-node';
+import { FilterParams } from 'pip-services3-commons-node';
+import { PagingParams } from 'pip-services3-commons-node';
+import { DataPage } from 'pip-services3-commons-node';
+import { IdentifiableMemoryPersistence } from 'pip-services3-data-node';
 
 import { StatCounterTypeV1 } from '../data/version1/StatCounterTypeV1';
 import { StatCounterV1 } from '../data/version1/StatCounterV1';

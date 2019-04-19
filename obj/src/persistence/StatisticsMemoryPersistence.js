@@ -3,13 +3,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
 let _ = require('lodash');
 let async = require('async');
 let moment = require('moment-timezone');
-const pip_services_commons_node_1 = require("pip-services-commons-node");
-const pip_services_commons_node_2 = require("pip-services-commons-node");
-const pip_services_commons_node_3 = require("pip-services-commons-node");
-const pip_services_data_node_1 = require("pip-services-data-node");
+const pip_services3_commons_node_1 = require("pip-services3-commons-node");
+const pip_services3_commons_node_2 = require("pip-services3-commons-node");
+const pip_services3_commons_node_3 = require("pip-services3-commons-node");
+const pip_services3_data_node_1 = require("pip-services3-data-node");
 const StatCounterTypeV1_1 = require("../data/version1/StatCounterTypeV1");
 const StatCounterKeyGenerator_1 = require("./StatCounterKeyGenerator");
-class StatisticsMemoryPersistence extends pip_services_data_node_1.IdentifiableMemoryPersistence {
+class StatisticsMemoryPersistence extends pip_services3_data_node_1.IdentifiableMemoryPersistence {
     constructor() {
         super();
         this._maxPageSize = 1000;
@@ -18,7 +18,7 @@ class StatisticsMemoryPersistence extends pip_services_data_node_1.IdentifiableM
         let items = _.map(this._items, (item) => item.group);
         items = _.uniq(items);
         // Extract a page
-        paging = paging != null ? paging : new pip_services_commons_node_2.PagingParams();
+        paging = paging != null ? paging : new pip_services3_commons_node_2.PagingParams();
         let skip = paging.getSkip(-1);
         let take = paging.getTake(this._maxPageSize);
         let total = null;
@@ -27,7 +27,7 @@ class StatisticsMemoryPersistence extends pip_services_data_node_1.IdentifiableM
         if (skip > 0)
             items = _.slice(items, skip);
         items = _.take(items, take);
-        let page = new pip_services_commons_node_3.DataPage(items, total);
+        let page = new pip_services3_commons_node_3.DataPage(items, total);
         callback(null, page);
     }
     matchString(value, search) {
@@ -46,7 +46,7 @@ class StatisticsMemoryPersistence extends pip_services_data_node_1.IdentifiableM
         return false;
     }
     composeFilter(filter) {
-        filter = filter || new pip_services_commons_node_1.FilterParams();
+        filter = filter || new pip_services3_commons_node_1.FilterParams();
         let search = filter.getAsNullableString('search');
         let group = filter.getAsNullableString('group');
         let name = filter.getAsNullableString('name');

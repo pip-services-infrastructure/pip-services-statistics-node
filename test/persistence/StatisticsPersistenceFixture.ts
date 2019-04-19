@@ -1,9 +1,9 @@
 let async = require('async');
 let assert = require('chai').assert;
 
-import { FilterParams } from 'pip-services-commons-node';
-import { PagingParams } from 'pip-services-commons-node';
-import { DateTimeConverter } from 'pip-services-commons-node';
+import { FilterParams } from 'pip-services3-commons-node';
+import { PagingParams } from 'pip-services3-commons-node';
+import { DateTimeConverter } from 'pip-services3-commons-node';
 
 import { IStatisticsPersistence } from '../../src/persistence/IStatisticsPersistence';
 import { StatCounterRecordV1 } from '../../src/data/version1/StatCounterRecordV1';

@@ -3,21 +3,21 @@ Object.defineProperty(exports, "__esModule", { value: true });
 let _ = require('lodash');
 let async = require('async');
 let moment = require('moment-timezone');
-const pip_services_commons_node_1 = require("pip-services-commons-node");
-const pip_services_commons_node_2 = require("pip-services-commons-node");
-const pip_services_commons_node_3 = require("pip-services-commons-node");
-const pip_services_mongodb_node_1 = require("pip-services-mongodb-node");
+const pip_services3_commons_node_1 = require("pip-services3-commons-node");
+const pip_services3_commons_node_2 = require("pip-services3-commons-node");
+const pip_services3_commons_node_3 = require("pip-services3-commons-node");
+const pip_services3_mongodb_node_1 = require("pip-services3-mongodb-node");
 const StatCounterTypeV1_1 = require("../data/version1/StatCounterTypeV1");
 const StatRecordsMongoDbSchema_1 = require("./StatRecordsMongoDbSchema");
 const StatCounterKeyGenerator_1 = require("./StatCounterKeyGenerator");
-class StatisticsMongoDbPersistence extends pip_services_mongodb_node_1.IdentifiableMongoDbPersistence {
+class StatisticsMongoDbPersistence extends pip_services3_mongodb_node_1.IdentifiableMongoDbPersistence {
     constructor() {
         super('statistics', StatRecordsMongoDbSchema_1.StatRecordsMongoDbSchema());
         this._maxPageSize = 1000;
     }
     getGroups(correlationId, paging, callback) {
         // Extract a page
-        paging = paging != null ? paging : new pip_services_commons_node_2.PagingParams();
+        paging = paging != null ? paging : new pip_services3_commons_node_2.PagingParams();
         let skip = paging.getSkip(-1);
         let take = paging.getTake(this._maxPageSize);
         let filter = { type: 0 };
@@ -32,7 +32,7 @@ class StatisticsMongoDbPersistence extends pip_services_mongodb_node_1.Identifia
                 if (skip > 0)
                     items = _.slice(items, skip);
                 items = _.take(items, take);
-                let page = new pip_services_commons_node_3.DataPage(items, total);
+                let page = new pip_services3_commons_node_3.DataPage(items, total);
                 callback(null, page);
             }
             else {
@@ -41,7 +41,7 @@ class StatisticsMongoDbPersistence extends pip_services_mongodb_node_1.Identifia
         });
     }
     composeFilter(filter) {
-        filter = filter || new pip_services_commons_node_1.FilterParams();
+        filter = filter || new pip_services3_commons_node_1.FilterParams();
         let criteria = [];
         let search = filter.getAsNullableString('search');
         if (search != null) {
