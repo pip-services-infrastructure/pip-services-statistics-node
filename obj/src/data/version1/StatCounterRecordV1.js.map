@@ -1,1 +1,1 @@
-{"version":3,"file":"StatCounterRecordV1.js","sourceRoot":"","sources":["../../../../src/data/version1/StatCounterRecordV1.ts"],"names":[],"mappings":";;AAAA,IAAI,CAAC,GAAG,OAAO,CAAC,QAAQ,CAAC,CAAC;AAC1B,IAAI,MAAM,GAAG,OAAO,CAAC,iBAAiB,CAAC,CAAC;AAKxC,MAAa,mBAAmB;CAU/B;AAVD,kDAUC"}
+{"version":3,"file":"StatCounterRecordV1.js","sourceRoot":"","sources":["../../../../src/data/version1/StatCounterRecordV1.ts"],"names":[],"mappings":";;AAAA,IAAI,CAAC,GAAG,OAAO,CAAC,QAAQ,CAAC,CAAC;AAC1B,IAAI,MAAM,GAAG,OAAO,CAAC,iBAAiB,CAAC,CAAC;AAKxC;CAUC;AAVD,kDAUC"}

@@ -8,12 +8,12 @@ import { IStatisticsPersistence } from './IStatisticsPersistence';
 export declare class StatisticsMemoryPersistence extends IdentifiableMemoryPersistence<StatCounterRecordV1, string> implements IStatisticsPersistence {
     constructor();
     getGroups(correlationId: string, paging: PagingParams, callback: (err: any, page: DataPage<string>) => void): void;
-    private matchString;
-    private matchSearch;
-    private composeFilter;
+    private matchString(value, search);
+    private matchSearch(item, search);
+    private composeFilter(filter);
     getPageByFilter(correlationId: string, filter: FilterParams, paging: PagingParams, callback: (err: any, page: DataPage<StatCounterRecordV1>) => void): void;
     getListByFilter(correlationId: string, filter: FilterParams, callback: (err: any, list: StatCounterRecordV1[]) => void): void;
-    private incrementPartial;
+    private incrementPartial(correlationId, group, name, type, momentTime, value, callback?);
     incrementOne(correlationId: string, group: string, name: string, time: Date, timezone: string, value: number, callback?: (err: any) => void): void;
     incrementBatch(correlationId: string, increments: StatCounterIncrementV1[], callback?: (err: any) => void): void;
 }

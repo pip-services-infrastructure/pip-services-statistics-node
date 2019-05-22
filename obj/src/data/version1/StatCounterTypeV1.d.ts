@@ -3,5 +3,5 @@ export declare enum StatCounterTypeV1 {
     Year = 1,
     Month = 2,
     Day = 3,
-    Hour = 4
+    Hour = 4,
 }
