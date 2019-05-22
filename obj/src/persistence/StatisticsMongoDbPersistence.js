@@ -6,13 +6,13 @@ let moment = require('moment-timezone');
 const pip_services3_commons_node_1 = require("pip-services3-commons-node");
 const pip_services3_commons_node_2 = require("pip-services3-commons-node");
 const pip_services3_commons_node_3 = require("pip-services3-commons-node");
-const pip_services3_mongodb_node_1 = require("pip-services3-mongodb-node");
+const pip_services3_mongoose_node_1 = require("pip-services3-mongoose-node");
 const StatCounterTypeV1_1 = require("../data/version1/StatCounterTypeV1");
-const StatRecordsMongoDbSchema_1 = require("./StatRecordsMongoDbSchema");
+const StatRecordsMongooseSchema_1 = require("./StatRecordsMongooseSchema");
 const StatCounterKeyGenerator_1 = require("./StatCounterKeyGenerator");
-class StatisticsMongoDbPersistence extends pip_services3_mongodb_node_1.IdentifiableMongoDbPersistence {
+class StatisticsMongoDbPersistence extends pip_services3_mongoose_node_1.IdentifiableMongoosePersistence {
     constructor() {
-        super('statistics', StatRecordsMongoDbSchema_1.StatRecordsMongoDbSchema());
+        super('statistics', StatRecordsMongooseSchema_1.StatRecordsMongooseSchema());
         this._maxPageSize = 1000;
     }
     getGroups(correlationId, paging, callback) {

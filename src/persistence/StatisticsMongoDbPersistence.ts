@@ -5,21 +5,21 @@ let moment = require('moment-timezone');
 import { FilterParams } from 'pip-services3-commons-node';
 import { PagingParams } from 'pip-services3-commons-node';
 import { DataPage } from 'pip-services3-commons-node';
-import { IdentifiableMongoDbPersistence } from 'pip-services3-mongodb-node';
+import { IdentifiableMongoosePersistence } from 'pip-services3-mongoose-node';
 
 import { StatCounterTypeV1 } from '../data/version1/StatCounterTypeV1';
 import { StatCounterRecordV1 } from '../data/version1/StatCounterRecordV1';
 import { StatCounterIncrementV1 } from '../data/version1/StatCounterIncrementV1';
 import { IStatisticsPersistence } from './IStatisticsPersistence';
-import { StatRecordsMongoDbSchema } from './StatRecordsMongoDbSchema';
+import { StatRecordsMongooseSchema } from './StatRecordsMongooseSchema';
 import { StatCounterKeyGenerator } from './StatCounterKeyGenerator';
 
 export class StatisticsMongoDbPersistence 
-    extends IdentifiableMongoDbPersistence<StatCounterRecordV1, string> 
+    extends IdentifiableMongoosePersistence<StatCounterRecordV1, string> 
     implements IStatisticsPersistence {
 
     constructor() {
-        super('statistics', StatRecordsMongoDbSchema());
+        super('statistics', StatRecordsMongooseSchema());
         this._maxPageSize = 1000;
     }
 
