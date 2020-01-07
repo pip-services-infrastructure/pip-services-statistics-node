@@ -122,6 +122,6 @@ class StatisticsController {
         });
     }
 }
-StatisticsController._defaultConfig = pip_services3_commons_node_1.ConfigParams.fromTuples('dependencies.persistence', 'pip-services-statistics:persistence:*:*:1.0', 'options.facets_group', 'statistics');
 exports.StatisticsController = StatisticsController;
+StatisticsController._defaultConfig = pip_services3_commons_node_1.ConfigParams.fromTuples('dependencies.persistence', 'pip-services-statistics:persistence:*:*:1.0', 'options.facets_group', 'statistics');
 //# sourceMappingURL=StatisticsController.js.map

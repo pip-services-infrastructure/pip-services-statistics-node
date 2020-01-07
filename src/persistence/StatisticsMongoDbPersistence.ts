@@ -5,21 +5,21 @@ let moment = require('moment-timezone');
 import { FilterParams } from 'pip-services3-commons-node';
 import { PagingParams } from 'pip-services3-commons-node';
 import { DataPage } from 'pip-services3-commons-node';
-import { IdentifiableMongoosePersistence } from 'pip-services3-mongoose-node';
+import { IdentifiableMongoDbPersistence } from 'pip-services3-mongodb-node';
 
 import { StatCounterTypeV1 } from '../data/version1/StatCounterTypeV1';
 import { StatCounterRecordV1 } from '../data/version1/StatCounterRecordV1';
 import { StatCounterIncrementV1 } from '../data/version1/StatCounterIncrementV1';
 import { IStatisticsPersistence } from './IStatisticsPersistence';
-import { StatRecordsMongooseSchema } from './StatRecordsMongooseSchema';
 import { StatCounterKeyGenerator } from './StatCounterKeyGenerator';
 
 export class StatisticsMongoDbPersistence 
-    extends IdentifiableMongoosePersistence<StatCounterRecordV1, string> 
+    extends IdentifiableMongoDbPersistence<StatCounterRecordV1, string> 
     implements IStatisticsPersistence {
 
     constructor() {
-        super('statistics', StatRecordsMongooseSchema());
+        super('statistics');
+        super.ensureIndex({ group: 1 });
         this._maxPageSize = 1000;
     }
 
@@ -34,7 +34,7 @@ export class StatisticsMongoDbPersistence
         let filter = { type: 0 };
         let options = { group: 1 };
         
-        this._model.find(filter, options, (err, items) => {
+        this._collection.find(filter, options).toArray((err, items) => {
             if (items != null) {
                 items = _.map(items, (item) => item.group);
                 items = _.uniq(items);
@@ -157,7 +157,7 @@ export class StatisticsMongoDbPersistence
         time: Date, timezone: string, value: number,
         callback?: (err: any, added: boolean) => void): void {
 
-        let batch = this._model.collection.initializeUnorderedBulkOp();
+        let batch = this._collection.initializeUnorderedBulkOp();
         this.addOneIncrement(batch, group, name, time, timezone, value);
 
         batch.execute((err) => {
@@ -176,7 +176,7 @@ export class StatisticsMongoDbPersistence
             return;
         }
 
-        let batch = this._model.collection.initializeUnorderedBulkOp();
+        let batch = this._collection.initializeUnorderedBulkOp();
 
         for (let increment of increments) {
             this.addOneIncrement(batch,

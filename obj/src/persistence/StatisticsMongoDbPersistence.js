@@ -6,13 +6,13 @@ let moment = require('moment-timezone');
 const pip_services3_commons_node_1 = require("pip-services3-commons-node");
 const pip_services3_commons_node_2 = require("pip-services3-commons-node");
 const pip_services3_commons_node_3 = require("pip-services3-commons-node");
-const pip_services3_mongoose_node_1 = require("pip-services3-mongoose-node");
+const pip_services3_mongodb_node_1 = require("pip-services3-mongodb-node");
 const StatCounterTypeV1_1 = require("../data/version1/StatCounterTypeV1");
-const StatRecordsMongooseSchema_1 = require("./StatRecordsMongooseSchema");
 const StatCounterKeyGenerator_1 = require("./StatCounterKeyGenerator");
-class StatisticsMongoDbPersistence extends pip_services3_mongoose_node_1.IdentifiableMongoosePersistence {
+class StatisticsMongoDbPersistence extends pip_services3_mongodb_node_1.IdentifiableMongoDbPersistence {
     constructor() {
-        super('statistics', StatRecordsMongooseSchema_1.StatRecordsMongooseSchema());
+        super('statistics');
+        super.ensureIndex({ group: 1 });
         this._maxPageSize = 1000;
     }
     getGroups(correlationId, paging, callback) {
@@ -22,7 +22,7 @@ class StatisticsMongoDbPersistence extends pip_services3_mongoose_node_1.Identif
         let take = paging.getTake(this._maxPageSize);
         let filter = { type: 0 };
         let options = { group: 1 };
-        this._model.find(filter, options, (err, items) => {
+        this._collection.find(filter, options).toArray((err, items) => {
             if (items != null) {
                 items = _.map(items, (item) => item.group);
                 items = _.uniq(items);
@@ -118,7 +118,7 @@ class StatisticsMongoDbPersistence extends pip_services3_mongoose_node_1.Identif
         this.addPartialIncrement(batch, group, name, StatCounterTypeV1_1.StatCounterTypeV1.Hour, momentTime, value);
     }
     incrementOne(correlationId, group, name, time, timezone, value, callback) {
-        let batch = this._model.collection.initializeUnorderedBulkOp();
+        let batch = this._collection.initializeUnorderedBulkOp();
         this.addOneIncrement(batch, group, name, time, timezone, value);
         batch.execute((err) => {
             if (err == null)
@@ -133,7 +133,7 @@ class StatisticsMongoDbPersistence extends pip_services3_mongoose_node_1.Identif
                 callback(null);
             return;
         }
-        let batch = this._model.collection.initializeUnorderedBulkOp();
+        let batch = this._collection.initializeUnorderedBulkOp();
         for (let increment of increments) {
             this.addOneIncrement(batch, increment.group, increment.name, increment.time, increment.timezone, increment.value);
         }

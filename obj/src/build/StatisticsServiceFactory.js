@@ -17,11 +17,11 @@ class StatisticsServiceFactory extends pip_services3_components_node_1.Factory {
         this.registerAsType(StatisticsServiceFactory.HttpServiceDescriptor, StatisticsHttpServiceV1_1.StatisticsHttpServiceV1);
     }
 }
+exports.StatisticsServiceFactory = StatisticsServiceFactory;
 StatisticsServiceFactory.Descriptor = new pip_services3_commons_node_1.Descriptor("pip-services-statistics", "factory", "default", "default", "1.0");
 StatisticsServiceFactory.MemoryPersistenceDescriptor = new pip_services3_commons_node_1.Descriptor("pip-services-statistics", "persistence", "memory", "*", "1.0");
 StatisticsServiceFactory.FilePersistenceDescriptor = new pip_services3_commons_node_1.Descriptor("pip-services-statistics", "persistence", "file", "*", "1.0");
 StatisticsServiceFactory.MongoDbPersistenceDescriptor = new pip_services3_commons_node_1.Descriptor("pip-services-statistics", "persistence", "mongodb", "*", "1.0");
 StatisticsServiceFactory.ControllerDescriptor = new pip_services3_commons_node_1.Descriptor("pip-services-statistics", "controller", "default", "*", "1.0");
 StatisticsServiceFactory.HttpServiceDescriptor = new pip_services3_commons_node_1.Descriptor("pip-services-statistics", "service", "http", "*", "1.0");
-exports.StatisticsServiceFactory = StatisticsServiceFactory;
 //# sourceMappingURL=StatisticsServiceFactory.js.map
