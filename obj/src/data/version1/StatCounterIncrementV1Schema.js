@@ -7,7 +7,7 @@ class StatCounterIncrementV1Schema extends pip_services3_commons_node_1.ObjectSc
         super();
         this.withRequiredProperty('group', pip_services3_commons_node_2.TypeCode.String);
         this.withRequiredProperty('name', pip_services3_commons_node_2.TypeCode.String);
-        this.withOptionalProperty('time', null); //TypeCode.DateTime);
+        this.withOptionalProperty('time', pip_services3_commons_node_2.TypeCode.DateTime);
         this.withOptionalProperty('timezone', pip_services3_commons_node_2.TypeCode.String);
         this.withRequiredProperty('value', pip_services3_commons_node_2.TypeCode.Float);
     }
