@@ -2,7 +2,7 @@
     "name": "pip-services-statistics-node",
     "version": "1.0.1",
     "author": "Conceptual Vision Consulting LLC",
-    "description": "Event logging microservice in Node.js",
+    "description": "Statistics microservice in Node.js",
     "contributors": [
         {
             "name": "Sergey Seroukhov",
@@ -13,8 +13,7 @@
     "typings": "./obj/src/index.d.ts",
     "keywords": [
         "pip.services",
-        "event",
-        "logging"
+        "statistics"
     ],
     "noAnalyze": true,
     "repository": {
